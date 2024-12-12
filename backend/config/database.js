@@ -20,7 +20,7 @@ module.exports = {
       }
     },
     define: {
-      schema: SCHEMA
+      schema: process.env.SCHEMA
     }
   }
 };

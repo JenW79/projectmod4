@@ -50,7 +50,7 @@ Returns the information about the current user that is logged in.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: /api/auth/session
+  * Route path: /api/session
   * Body: none
 
 * Successful Response when there is a logged in user
@@ -91,7 +91,7 @@ information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * Route path: /api/auth/login
+  * Route path: /api/session
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -157,7 +157,7 @@ user's information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * Route path: /api/auth/signup
+  * Route path: /api/users
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -273,7 +273,7 @@ Returns all the spots owned (created) by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: /api/spots/current
+  * Route path: /api/session/spots
   * Body: none
 
 * Successful Response
@@ -620,7 +620,7 @@ Returns all the reviews written by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: /api/reviews/current
+  * Route path: /api/session/reviews
   * Body: none
 
 * Successful Response
@@ -932,7 +932,7 @@ Delete an existing review.
 * Require proper authorization: Review must belong to the current user
 * Request
   * Method: DELETE
-  * Route path: /reviews/:reviewId
+  * Route path: /api/reviews/:reviewId
   * Body: none
 
 * Successful Response
@@ -968,7 +968,7 @@ Return all the bookings that the current user has made.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: bookings/current
+  * Route path: api/session/bookings
   * Body: none
 
 * Successful Response
@@ -1011,8 +1011,9 @@ Return all the bookings that the current user has made.
 Return all the bookings for a spot specified by id.
 
 * Require Authentication: true
+* Require proper authorization: Spot must NOT belong to the current user
 * Request
-  * Method: GET
+  * Method: POST
   * Route path: /api/spots/:spotId/bookings
   * Body: none
 

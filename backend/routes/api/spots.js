@@ -7,33 +7,28 @@ const { Sequelize, Spot, Review, Image, User } = require('../../db/models');
 
 const router = express.Router();
 
-// Get all spots
 router.get('/', async (req, res, next) => {
   try {
     const spots = await Spot.findAll({
       attributes: {
         include: [
-          // Calculate the average rating for each spot
           [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-          // Include the URL of the preview image
-          [Sequelize.col('Images.url'), 'previewImage'],
+          [Sequelize.col('SpotImages.url'), 'previewImage'],
         ],
       },
       include: [
-        // Join with Reviews to calculate avgRating
         { model: Review, attributes: [] },
-        // Join with Images to get previewImage
-        { model: Image, attributes: [] },
+        { model: Image, as: 'SpotImages', attributes: [] },
       ],
-      group: ['Spot.id'], // Group by Spot ID to ensure the calculations work
+      group: ['Spot.id'],
     });
 
-    // Send the spots as a JSON response
     res.json({ spots });
   } catch (err) {
-    next(err); // Pass errors to the error handler middleware
+    next(err);
   }
 });
+
 
 module.exports = router;
 
@@ -42,59 +37,42 @@ router.get('/current', requireAuth, async (req, res) => {
   const userId = req.user.id;
 
   const spots = await Spot.findAll({
-      where: { ownerId: userId },
-      attributes: {
-          include: [
-              [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-              [Sequelize.col('Images.url'), 'previewImage'],
-          ],
-      },
+    where: { ownerId: userId },
+    attributes: {
       include: [
-          { model: Review, attributes: [] },
-          { model: Image, attributes: [] },
+        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
+        [Sequelize.col('Images.url'), 'previewImage'],
       ],
-      group: ['Spot.id'],
+    },
+    include: [
+      { model: Review, attributes: [] },
+      { model: Image, as: 'SpotImages', attributes: [] }, 
+    ],
+    group: ['Spot.id'],
   });
 
   res.json({ spots });
 });
 
-// Get spot by spot id
 router.get('/:spotId', async (req, res, next) => {
   const { spotId } = req.params;
 
   try {
-    // Find the spot with aggregate data and associations
     const spot = await Spot.findByPk(spotId, {
       attributes: [
-        'id', 'ownerId', 'address', 'city', 'state', 'country', 
-        'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt',
+        'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 
+        'name', 'description', 'price', 'createdAt', 'updatedAt',
         [Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), 'numReviews'],
         [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgStarRating'],
       ],
       include: [
-        // Include SpotImages association
-        {
-          model: Image,
-          as: 'SpotImages',
-          attributes: ['id', 'url', 'preview'],
-        },
-        // Include Owner association
-        {
-          model: User,
-          as: 'Owner',
-          attributes: ['id', 'firstName', 'lastName'],
-        },
-        // Include Reviews for aggregate data
-        {
-          model: Review,
-          attributes: [],
-        },
+        { model: Image, as: 'SpotImages', attributes: ['id', 'url', 'preview'] },
+        { model: User, as: 'Owner', attributes: ['id', 'firstName', 'lastName'] },
+        { model: Review, attributes: [] },
       ],
       group: ['Spot.id', 'SpotImages.id', 'Owner.id'],
     });
 
-    // If the spot does not exist, return a 404 error
     if (!spot) {
       const err = new Error("Spot couldn't be found");
       err.status = 404;
@@ -127,6 +105,7 @@ router.get('/:spotId', async (req, res, next) => {
   }
 });
 
+
 // Create a spot (authenticated)
 router.post(
   '/',
@@ -156,7 +135,7 @@ router.post(
 );
 
 // Update a spot (authenticated)
-router.put('/:id', requireAuth, async (req, res, next) => {
+router.put('/:spotId', requireAuth, async (req, res, next) => {
   const spot = await Spot.findByPk(req.params.id);
 
   if (!spot) {

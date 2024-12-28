@@ -46,7 +46,7 @@ router.get('/current', requireAuth, async (req, res) => {
     },
     include: [
       { model: Review, attributes: [] },
-      { model: Image, as: 'SpotImages', attributes: [] }, 
+      { model: Image, as: 'SpotImages', attributes: ['id', 'url', 'preview'] }, 
     ],
     group: ['Spot.id'],
   });

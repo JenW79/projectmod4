@@ -32,6 +32,11 @@ module.exports = {
         references: { model: 'Spots', key: 'id' },
         onDelete: 'CASCADE',
       },
+      preview: {
+        type: Sequelize.BOOLEAN, 
+        allowNull: false,
+        defaultValue: false,
+      },
       reviewId: {
         type: Sequelize.INTEGER,
         allowNull: true,

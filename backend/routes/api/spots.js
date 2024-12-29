@@ -3,6 +3,7 @@ const { requireAuth } = require('../../utils/auth');
 const { check, validationResult } = require('express-validator');
 const { spotValidation } = require('../../utils/validation');
 const { Sequelize, Spot, Review, Image, User } = require('../../db/models');
+const { handleValidationErrors } = require('../../utils/validation');
 
 
 const router = express.Router();
@@ -259,6 +260,57 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
     next(err);
   }
 });
+
+// Create a new review (authenticated)
+router.post(
+  '/:spotId/reviews',
+  requireAuth,
+  [
+    check('review')
+      .exists({ checkFalsy: true })
+      .withMessage('Review text is required'),
+    check('stars')
+      .isInt({ min: 1, max: 5 })
+      .withMessage('Stars must be an integer from 1 to 5'),
+    handleValidationErrors,
+  ],
+  async (req, res, next) => {
+    const { spotId } = req.params;
+    const { review, stars } = req.body;
+
+    try {
+      // Check if the spot exists
+      const spot = await Spot.findByPk(spotId);
+      if (!spot) {
+        const err = new Error("Spot couldn't be found");
+        err.status = 404;
+        return next(err);
+      }
+
+      // Check if the current user already reviewed the spot
+      const existingReview = await Review.findOne({
+        where: { spotId, userId: req.user.id },
+      });
+      if (existingReview) {
+        const err = new Error('User has already reviewed this spot');
+        err.status = 403;
+        return next(err);
+      }
+
+      // Create a new review
+      const newReview = await Review.create({
+        spotId,
+        userId: req.user.id,
+        review,
+        stars,
+      });
+
+      res.status(201).json(newReview);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 
 module.exports = router;

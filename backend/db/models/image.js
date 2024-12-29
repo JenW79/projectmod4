@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       Image.belongsTo(models.Review, {
         foreignKey: 'reviewId',
         as: 'ReviewImages',
+        onDelete: 'CASCADE',
       });
       Image.belongsTo(models.User, {
         foreignKey: 'userId',
@@ -35,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     spotId: {
       type: DataTypes.INTEGER,

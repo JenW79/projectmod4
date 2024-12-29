@@ -70,6 +70,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
   }
 })
 
+//get spot by id
 router.get('/:spotId', async (req, res, next) => {
   const { spotId } = req.params;
 
@@ -311,6 +312,48 @@ router.post(
     }
   }
 );
+// Get all reviews for a specific spot
+router.get('/:spotId/reviews', async (req, res, next) => {
+  const { spotId } = req.params;
 
+  try {
+    // Check if the spot exists
+    const spot = await Spot.findByPk(spotId);
+    if (!spot) {
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Fetch all reviews for the specified spot
+    const reviews = await Review.findAll({
+      where: { spotId },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'firstName', 'lastName'],
+        },
+        {
+          model: Image,
+          as: 'ReviewImages', // Alias for Review Images
+          attributes: ['id', 'url'],
+        },
+      ],
+      attributes: [
+        'id',
+        'userId',
+        'spotId',
+        'review',
+        'stars',
+        'createdAt',
+        'updatedAt',
+      ],
+    });
+
+    res.json({ Reviews: reviews });
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;

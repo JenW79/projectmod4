@@ -1,5 +1,4 @@
 'use strict';
-const { Spot } = require('../models');
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {

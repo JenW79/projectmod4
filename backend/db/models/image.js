@@ -2,6 +2,9 @@
 const {
   Model
 } = require('sequelize');
+
+const { Image } = require('../models');
+
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {
     /**
@@ -11,9 +14,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Image.belongsTo(models.Spot, { foreignKey: 'spotId' });
-      Image.belongsTo(models.Review, { foreignKey: 'reviewId' });
-    }
+      Image.belongsTo(models.Spot, {
+        foreignKey: 'spotId',
+        as: 'SpotImages', 
+      });
+      Image.belongsTo(models.Review, {
+        foreignKey: 'reviewId',
+        as: 'ReviewImages',
+      });
+      Image.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'UserImages',
+      });
+    };
   }
   Image.init({
     url: {

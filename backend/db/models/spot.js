@@ -2,6 +2,8 @@
 const {
   Model
 } = require('sequelize');
+
+
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     /**
@@ -14,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       Spot.hasMany(models.Image, { foreignKey: 'spotId', as: 'SpotImages', onDelete: 'CASCADE', hooks: true });
       Spot.hasMany(models.Review, { foreignKey: 'spotId', onDelete: 'CASCADE', hooks: true });
       Spot.belongsTo(models.User, { foreignKey: 'ownerId', as: 'Owner' });
-
       }
     }
 

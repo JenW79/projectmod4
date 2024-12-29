@@ -1,29 +1,62 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
-const { Image } = require('../../db/models');
+const { Spot, Image } = require('../../db/models');
+const { check } = require('express-validator');
+const { handleValidationErrors } = require('../../utils/validation');
+
+const validateImage = [
+  check('url')
+    .exists({ checkFalsy: true })
+    .withMessage('Image URL is required.'),
+  check('preview')
+    .isBoolean()
+    .withMessage('Preview must be a boolean value.'),
+  handleValidationErrors,
+];
 
 const router = express.Router();
 
-// Add an image to a Spot or Review
-router.post('/', requireAuth, async (req, res, next) => {
-  const { spotId, reviewId, url, status } = req.body;
+// // Add an image to a spot
+// router.post('/:spotId/images', requireAuth, validateImage, async (req, res, next) => {
+//   const { spotId } = req.params;
+//   const { url, preview } = req.body;
 
-  if (!spotId && !reviewId) {
-    const err = new Error("You must provide either a spotId or a reviewId");
-    err.status = 400;
-    return next(err);
-  }
+//   try {
+//     // Check if the spot exists
+//     const spot = await Spot.findByPk(spotId);
 
-  const newImage = await Image.create({
-    spotId,
-    reviewId,
-    userId: req.user.id,
-    url,
-    status,
-  });
+//     if (!spot) {
+//       const err = new Error("Spot couldn't be found");
+//       err.status = 404;
+//       return next(err);
+//     }
 
-  res.status(201).json(newImage);
-});
+//      // Check if the authenticated user owns the spot
+//      if (spot.ownerId !== req.user.id) {
+//       const err = new Error('Forbidden: You are not authorized to add an image to this spot.');
+//       err.status = 403;
+//       return next(err);
+//     }
+
+//     // Create the image and associate it with the current user and spot
+//     const newImage = await Image.create({
+//       spotId,
+//       userId: req.user.id, 
+//       url,
+//       preview,
+//     });
+
+//     // Send the response
+//     res.status(201).json({
+//       id: newImage.id,
+//       url: newImage.url,
+//       preview: newImage.preview,
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+
 
 // Delete an image (authenticated)
 router.delete('/:id', requireAuth, async (req, res, next) => {

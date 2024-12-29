@@ -33,26 +33,41 @@ router.get('/', async (req, res, next) => {
 module.exports = router;
 
 // Get spots created by the current user (authenticated)
-router.get('/current', requireAuth, async (req, res) => {
+router.get('/current', requireAuth, async (req, res, next) => {
   const userId = req.user.id;
 
-  const spots = await Spot.findAll({
-    where: { ownerId: userId },
-    attributes: {
-      include: [
+  try {
+    const spots = await Spot.findAll({
+      where: { ownerId: userId },
+      attributes: [
+        'id',
+        'ownerId',
+        'name',
+        'address',
+        'city',
+        'state',
+        'country',
+        'lat',
+        'lng',
+        'description',
+        'price',
+        'createdAt',
+        'updatedAt',
         [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-        [Sequelize.col('Images.url'), 'previewImage'],
+        [Sequelize.col('SpotImages.url'), 'previewImage'],
       ],
-    },
-    include: [
-      { model: Review, attributes: [] },
-      { model: Image, as: 'SpotImages', attributes: ['id', 'url', 'preview'] }, 
-    ],
-    group: ['Spot.id'],
-  });
+      include: [
+        { model: Review, attributes: [] },
+        { model: Image, as: 'SpotImages', attributes: [] },
+      ],
+      group: ['Spot.id'],
+    });
 
-  res.json({ spots });
-});
+    res.json({ spots });
+  } catch (err) {
+    next(err);
+  }
+})
 
 router.get('/:spotId', async (req, res, next) => {
   const { spotId } = req.params;
@@ -134,35 +149,116 @@ router.post(
   }
 );
 
-// Update a spot (authenticated)
-router.put('/:spotId', requireAuth, async (req, res, next) => {
-  const spot = await Spot.findByPk(req.params.id);
-
-  if (!spot) {
-    const err = new Error("Spot couldn't be found");
-    err.status = 404;
-    return next(err);
-  }
-
+/// Update a spot by the current user
+router.put('/:spotId', requireAuth, spotValidation, async (req, res, next) => {
+  const { spotId } = req.params;
   const { name, description, price, lat, lng, address, city, state, country } = req.body;
-  spot.set({ name, description, city, state, country, lat, lng, address, price });
-  await spot.save();
 
-  res.json(spot);
+  try {
+    // Find the spot by the given spotId
+    const spot = await Spot.findByPk(spotId);
+
+    if (!spot) {
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check if the current user is the owner of the spot
+    if (spot.ownerId !== req.user.id) {
+      const err = new Error('Forbidden');
+      err.status = 403;
+      return next(err);
+    }
+
+    // Update the spot's details
+    spot.set({
+      name,
+      description,
+      price,
+      lat,
+      lng,
+      address,
+      city,
+      state,
+      country,
+    });
+
+    // Save the updated spot
+    await spot.save();
+
+    // Return the updated spot as the response
+    res.status(200).json(spot);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Delete a spot (authenticated)
 router.delete('/:id', requireAuth, async (req, res, next) => {
-  const spot = await Spot.findByPk(req.params.id);
+  try {
+    const spot = await Spot.findByPk(req.params.id);
 
-  if (!spot) {
-    const err = new Error("Spot couldn't be found");
-    err.status = 404;
-    return next(err);
+    if (!spot) {
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check if the current user is the owner of the spot
+    if (spot.ownerId !== req.user.id) {
+      const err = new Error('Forbidden');
+      err.status = 403;
+      return next(err);
+    }
+
+    // If the user is the owner, delete the spot
+    await spot.destroy();
+    res.json({ message: 'Successfully deleted' });
+  } catch (err) {
+    next(err);
   }
-
-  await spot.destroy();
-  res.json({ message: 'Successfully deleted' });
 });
+
+// Add an image to a spot
+router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+  const { spotId } = req.params;
+  const { url, preview } = req.body;
+
+  try {
+    // Check if the spot exists
+    const spot = await Spot.findByPk(spotId);
+
+    if (!spot) {
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check if the authenticated user owns the spot
+    if (spot.ownerId !== req.user.id) {
+      const err = new Error('Forbidden: You are not authorized to add an image to this spot.');
+      err.status = 403;
+      return next(err);
+    }
+
+    // Create the new image
+    const newImage = await Image.create({
+      spotId,
+      userId: req.user.id,
+      url,
+      preview,
+    });
+
+    res.status(201).json({
+      id: newImage.id,
+      url: newImage.url,
+      preview: newImage.preview,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 module.exports = router;

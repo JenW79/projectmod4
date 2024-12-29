@@ -152,6 +152,53 @@ router.post(
   }
 );
 
+// Validation middleware for review fields
+const validateReview = [
+  check('review')
+    .exists({ checkFalsy: true })
+    .withMessage('Review text is required'),
+  check('stars')
+    .exists({ checkFalsy: true })
+    .isInt({ min: 1, max: 5 })
+    .withMessage('Stars must be an integer from 1 to 5'),
+  handleValidationErrors,
+];
+
+// Update and return an existing review
+router.put('/:reviewId', requireAuth, validateReview, async (req, res, next) => {
+  const { reviewId } = req.params;
+  const { review, stars } = req.body;
+
+  try {
+    // Find the review by ID
+    const existingReview = await Review.findByPk(reviewId);
+
+    // If the review does not exist, return a 404 error
+    if (!existingReview) {
+      const err = new Error("Review couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check if the current user is the owner of the review
+    if (existingReview.userId !== req.user.id) {
+      const err = new Error('Forbidden: You are not authorized to update this review');
+      err.status = 403;
+      return next(err);
+    }
+
+    // Update the review and save it to the database
+    existingReview.review = review;
+    existingReview.stars = stars;
+    await existingReview.save();
+
+    // Return the updated review
+    res.json(existingReview);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Delete a review (authenticated)
 router.delete('/:id', requireAuth, async (req, res, next) => {
   const { id } = req.params;

@@ -2,12 +2,12 @@ const express = require('express');
 const { requireAuth } = require('../../utils/auth');
 const { check, validationResult } = require('express-validator');
 const { spotValidation } = require('../../utils/validation');
-const { Sequelize, Spot, Review, Image, User } = require('../../db/models');
+const { Sequelize, Spot, Review, Image, User, Booking } = require('../../db/models');
 const { handleValidationErrors } = require('../../utils/validation');
 
 
 const router = express.Router();
-
+//get all spots
 router.get('/', async (req, res, next) => {
   try {
     const spots = await Spot.findAll({
@@ -353,6 +353,123 @@ router.get('/:spotId/reviews', async (req, res, next) => {
     res.json({ Reviews: reviews });
   } catch (error) {
     next(error);
+  }
+});
+
+// Validation middleware for booking dates
+const validateBooking = [
+  check('startDate')
+    .exists({ checkFalsy: true })
+    .isDate()
+    .withMessage('Start date must be a valid date'),
+  check('endDate')
+    .exists({ checkFalsy: true })
+    .isDate()
+    .withMessage('End date must be a valid date'),
+  handleValidationErrors,
+];
+
+// Create a new booking for a spot
+router.post(
+  '/:spotId/bookings',
+  requireAuth,
+  validateBooking,
+  async (req, res, next) => {
+    const { spotId } = req.params;
+    const { startDate, endDate } = req.body;
+
+    try {
+      // Find the spot by id
+      const spot = await Spot.findByPk(spotId);
+
+      // If the spot does not exist, return a 404 error
+      if (!spot) {
+        const err = new Error("Spot couldn't be found");
+        err.status = 404;
+        return next(err);
+      }
+
+      // Check if the user is the owner of the spot
+      if (spot.ownerId === req.user.id) {
+        const err = new Error('You cannot book your own spot.');
+        err.status = 403;
+        return next(err);
+      }
+
+      // Check for booking conflicts
+      const existingBookings = await Booking.findAll({
+        where: {
+          spotId,
+          [Sequelize.Op.or]: [
+            {
+              startDate: {
+                [Sequelize.Op.lte]: endDate,
+              },
+              endDate: {
+                [Sequelize.Op.gte]: startDate,
+              },
+            },
+          ],
+        },
+      });
+
+      if (existingBookings.length > 0) {
+        const err = new Error('Spot is already booked for the specified dates.');
+        err.status = 403;
+        return next(err);
+      }
+
+      // Create the booking
+      const newBooking = await Booking.create({
+        spotId,
+        userId: req.user.id,
+        startDate,
+        endDate,
+      });
+
+      // Return the newly created booking
+      res.status(201).json(newBooking);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+
+// Get all bookings for a spot by spotId
+router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+  try {
+    const { spotId } = req.params;
+
+    // Check if the spot exists
+    const spot = await Spot.findByPk(spotId);
+    if (!spot) {
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check if the current user is the owner of the spot
+    const isOwner = spot.ownerId === req.user.id;
+
+    const bookings = await Booking.findAll({
+      where: { spotId },
+      attributes: isOwner
+        ? ['id', 'spotId', 'userId', 'startDate', 'endDate', 'createdAt', 'updatedAt']
+        : ['spotId', 'startDate', 'endDate'], // Non-owner gets limited fields
+      include: isOwner
+        ? [
+            {
+              model: User,
+              attributes: ['id', 'firstName', 'lastName'], // Include user info for the owner
+            },
+          ]
+        : [],
+    });
+
+    res.json({ bookings });
+  } catch (err) {
+    next(err);
   }
 });
 

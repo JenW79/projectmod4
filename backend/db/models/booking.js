@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const Sequelize = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Booking extends Model {
     /**
@@ -15,56 +15,63 @@ module.exports = (sequelize, DataTypes) => {
       Booking.belongsTo(models.User, { foreignKey: 'userId' });
     }
   }
-  Booking.init({
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    spotId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    startDate: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    endDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      validate: {
-        isAfterStartDate(value) {
-          if (value <= this.startDate) {
-            throw new Error('End date must be after start date.');
-          }
+  Booking.init(
+    {
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      spotId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      startDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+      },
+      endDate: {
+        type: DataTypes.DATEONLY, 
+        allowNull: false,
+        validate: {
+          isAfterStartDate(value) {
+            if (value <= this.startDate) {
+              throw new Error('End date must be after start date.');
+            }
+          },
         },
       },
     },
-  },
-  {
-    sequelize,
-    modelName: 'Booking',
-    hooks: {
-      beforeCreate: async (booking) => {
-        const existingBooking = await Booking.findOne({
-          where: {
-            spotId: booking.spotId,
-            [sequelize.Op.or]: [
-              {
-                startDate: { [sequelize.Op.between]: [booking.startDate, booking.endDate] },
-              },
-              {
-                endDate: { [sequelize.Op.between]: [booking.startDate, booking.endDate] },
-              },
-            ],
-          },
-        });
-        if (existingBooking) {
-          throw new Error('Booking dates overlap with an existing booking.');
-        }
+    {
+      sequelize,
+      modelName: 'Booking',
+      hooks: {
+        beforeCreate: async (booking, options) => {
+          const existingBooking = await Booking.findOne({
+            where: {
+              spotId: booking.spotId,
+              [Sequelize.Op.or]: [
+                {
+                  startDate: { [Sequelize.Op.between]: [booking.startDate, booking.endDate] },
+                },
+                {
+                  endDate: { [Sequelize.Op.between]: [booking.startDate, booking.endDate] },
+                },
+                {
+                  startDate: { [Sequelize.Op.lte]: booking.startDate },
+                  endDate: { [Sequelize.Op.gte]: booking.endDate },
+                },
+              ],
+            },
+          });
+
+          if (existingBooking) {
+            throw new Error('Booking dates overlap with an existing booking.');
+          }
+        },
       },
-    },
-  }
-);
+    }
+  );
+
 
 return Booking;
 };

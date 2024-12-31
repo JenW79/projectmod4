@@ -1,37 +1,97 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
-const { check, validationResult } = require('express-validator');
+const { check, query } = require('express-validator');
 const { spotValidation } = require('../../utils/validation');
 const { Sequelize, Spot, Review, Image, User, Booking } = require('../../db/models');
 const { handleValidationErrors } = require('../../utils/validation');
+const { Op } = require('sequelize');
 
 
 const router = express.Router();
-//get all spots
-router.get('/', async (req, res, next) => {
-  try {
-    const spots = await Spot.findAll({
-      attributes: {
-        include: [
-          [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-          [Sequelize.col('SpotImages.url'), 'previewImage'],
-        ],
-      },
-      include: [
-        { model: Review, attributes: [] },
-        { model: Image, as: 'SpotImages', attributes: [] },
-      ],
-      group: ['Spot.id'],
-    });
 
-    res.json({ spots });
-  } catch (err) {
-    next(err);
-  }
+
+
+// Get all spots and with query filters
+router.get('/', async (req, res, next) => {
+  let {
+    page = 1,
+    size = 20,
+    minLat,
+    maxLat,
+    minLng,
+    maxLng,
+    minPrice,
+    maxPrice,
+  } = req.query;
+  const where = {};
+
+  // Parse integers for page and size
+  page = parseInt(page, 10);
+  size = parseInt(size, 10);
+
+  // Enforce defaults and limits
+  if (isNaN(page) || page < 1) page = 1; // Default to page 1 if invalid
+  if (isNaN(size) || size < 1 || size > 100) size = 20; // Default to size 20 if invalid
+
+  const errors = [];
+if (page < 1 || isNaN(page)) errors.push('Page must be a number greater than or equal to 1.');
+if (size < 1 || isNaN(size)) errors.push('Size must be a number greater than or equal to 1.');
+if (minPrice && minPrice < 0) errors.push('Minimum price must be greater than or equal to 0.');
+if (maxPrice && maxPrice < 0) errors.push('Maximum price must be greater than or equal to 0.');
+
+if (errors.length) {
+  const err = new Error('Validation error');
+  err.status = 400;
+  err.errors = errors;
+  return next(err);
+}
+const filters = {};
+  if (minLat) filters.lat = { [Op.gte]: minLat };
+  if (maxLat) filters.lat = { ...filters.lat, [Op.lte]: maxLat };
+  if (minLng) filters.lng = { [Op.gte]: minLng };
+  if (maxLng) filters.lng = { ...filters.lng, [Op.lte]: maxLng };
+  if (minPrice) filters.price = { [Op.gte]: minPrice };
+  if (maxPrice) filters.price = { ...filters.price, [Op.lte]: maxPrice }
+
+  // Ensure valid pagination
+  const limit = size;
+  const offset = (page - 1) * size;
+   
+  try{
+  const spots = await Spot.findAll({
+    where: filters,
+    limit,
+    offset,
+    include: [
+      {
+        model: Image,
+        as: 'SpotImages',
+        attributes: ['url'],
+        where: { preview: true },
+        required: false,
+      },
+    ],
+  });
+
+  // Format spots to include previewImage
+  const formattedSpots = spots.map((spot) => {
+    const spotData = spot.toJSON();
+    return {
+      ...spotData,
+      previewImage: spotData.SpotImages?.[0]?.url || null,
+    };
+  });
+
+  res.json({
+    spots: formattedSpots,
+    page: parseInt(page),
+    size: parseInt(size),
+  });
+} catch (err) {
+  next(err);
+}
 });
 
-
-module.exports = router;
 
 // Get spots created by the current user (authenticated)
 router.get('/current', requireAuth, async (req, res, next) => {
@@ -58,7 +118,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
         [Sequelize.col('SpotImages.url'), 'previewImage'],
       ],
       include: [
-        { model: Review, attributes: [] },
+        { model: Review, as:'Reviews', attributes: [] },
         { model: Image, as: 'SpotImages', attributes: [] },
       ],
       group: ['Spot.id'],
@@ -85,7 +145,7 @@ router.get('/:spotId', async (req, res, next) => {
       include: [
         { model: Image, as: 'SpotImages', attributes: ['id', 'url', 'preview'] },
         { model: User, as: 'Owner', attributes: ['id', 'firstName', 'lastName'] },
-        { model: Review, attributes: [] },
+        { model: Review, as: 'Reviews', attributes: [] },
       ],
       group: ['Spot.id', 'SpotImages.id', 'Owner.id'],
     });
@@ -144,7 +204,7 @@ router.post(
       lat,
       lng,
       address,
-      ownerId: req.user.id, // Attach the authenticated user
+      ownerId: req.user.id, 
     });
 
     res.status(201).json(newSpot);
@@ -335,7 +395,7 @@ router.get('/:spotId/reviews', async (req, res, next) => {
         },
         {
           model: Image,
-          as: 'ReviewImages', // Alias for Review Images
+          as: 'ReviewImages', 
           attributes: ['id', 'url'],
         },
       ],

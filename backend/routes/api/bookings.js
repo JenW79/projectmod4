@@ -68,26 +68,130 @@ router.get('/current', requireAuth, async (req, res, next) => {
   }
 });
 
+// Update an existing booking
+router.put('/:bookingId', requireAuth, async (req, res, next) => {
+  try {
+    const { bookingId } = req.params;
+    const { startDate, endDate } = req.body;
+
+    // Find the booking by ID
+    const booking = await Booking.findByPk(bookingId);
+
+    if (!booking) {
+      const err = new Error("Booking couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check if the booking belongs to the current user
+    if (booking.userId !== req.user.id) {
+      const err = new Error('Unauthorized');
+      err.status = 403;
+      return next(err);
+    }
+
+    // Check if the booking is in the past
+    const today = new Date();
+    if (new Date(booking.endDate) < today) {
+      const err = new Error('Past bookings cannot be modified');
+      err.status = 400;
+      return next(err);
+    }
+
+    // Check for overlapping bookings
+    const overlappingBooking = await Booking.findOne({
+      where: {
+        spotId: booking.spotId,
+        id: { [Sequelize.Op.ne]: bookingId }, // Exclude the current booking
+        [Sequelize.Op.or]: [
+          {
+            startDate: {
+              [Sequelize.Op.between]: [startDate, endDate],
+            },
+          },
+          {
+            endDate: {
+              [Sequelize.Op.between]: [startDate, endDate],
+            },
+          },
+          {
+            [Sequelize.Op.and]: [
+              { startDate: { [Sequelize.Op.lte]: startDate } },
+              { endDate: { [Sequelize.Op.gte]: endDate } },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (overlappingBooking) {
+      const err = new Error('Booking dates overlap with an existing booking');
+      err.status = 403;
+      return next(err);
+    }
+
+    // Update the booking
+    booking.startDate = startDate;
+    booking.endDate = endDate;
+    await booking.save();
+
+    // Return the updated booking
+    res.json({
+      id: booking.id,
+      userId: booking.userId,
+      spotId: booking.spotId,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      createdAt: booking.createdAt,
+      updatedAt: booking.updatedAt,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 // Delete a booking
 router.delete('/:id', requireAuth, async (req, res, next) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  const booking = await Booking.findByPk(id);
+    // Find the booking by ID
+    const booking = await Booking.findByPk(id, {
+      include: {
+        model: Spot,
+        attributes: ['ownerId'], // Include ownerId of the spot
+      },
+    });
 
-  if (!booking) {
-    const err = new Error("Booking couldn't be found");
-    err.status = 404;
-    return next(err);
+    if (!booking) {
+      const err = new Error("Booking couldn't be found");
+      err.status = 404;
+      return next(err);
+    }
+
+    const today = new Date();
+
+    // Check if the booking is already started or in the past
+    if (new Date(booking.startDate) <= today) {
+      const err = new Error("Bookings that have started or are in the past cannot be deleted");
+      err.status = 400;
+      return next(err);
+    }
+
+    // Check if the user is authorized (owner of the booking or the spot)
+    if (booking.userId !== req.user.id && booking.Spot.ownerId !== req.user.id) {
+      const err = new Error('Unauthorized');
+      err.status = 403;
+      return next(err);
+    }
+
+    // Delete the booking
+    await booking.destroy();
+    res.json({ message: 'Successfully deleted' });
+  } catch (err) {
+    next(err);
   }
-
-  if (booking.userId !== req.user.id) {
-    const err = new Error('Unauthorized');
-    err.status = 403;
-    return next(err);
-  }
-
-  await booking.destroy();
-  res.json({ message: 'Successfully deleted' });
 });
 
 module.exports = router;

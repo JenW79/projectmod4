@@ -1,5 +1,6 @@
 'use strict';
 
+
 const { Model, Validator } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
@@ -57,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
           exclude: ['hashedPassword', 'email', 'createdAt', 'updatedAt'],
         },
       },
-    }
-  );
+      schema: process.env.NODE_ENV === 'production' ? process.env.SCHEMA : undefined,
+    });
   return User;
 };

@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Review extends Model {
     /**
@@ -51,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Review',
+    schema: process.env.NODE_ENV === 'production' ? process.env.SCHEMA : undefined,
   });
   return Review;
 };

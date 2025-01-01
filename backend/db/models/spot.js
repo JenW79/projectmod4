@@ -3,6 +3,11 @@ const {
   Model
 } = require('sequelize');
 
+let options = {};
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA;
+}
+
 
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
@@ -90,11 +95,12 @@ module.exports = (sequelize, DataTypes) => {
           return preview ? preview.url : null;
         },
       },
-    },
+    }, 
     
     {
     sequelize,
     modelName: 'Spot',
+    schema: process.env.NODE_ENV === 'production' ? process.env.SCHEMA : undefined,
   });
   return Spot;
 };

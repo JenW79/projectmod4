@@ -21,7 +21,8 @@ router.get('/current', requireAuth, async (req, res, next) => {
         },
         // Include associated Spot data
         {
-          model: Spot,
+          model: Spot, 
+          as: 'Spot',
           attributes: [
             'id',
             'ownerId',

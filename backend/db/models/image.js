@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 
 const { Image } = require('../models');
 
@@ -65,8 +63,8 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
     },
-  }
-);
+    schema: process.env.NODE_ENV === 'production' ? process.env.SCHEMA : undefined,
+  });
 
 return Image;
 };

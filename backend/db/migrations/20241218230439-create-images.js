@@ -1,6 +1,10 @@
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
+let options = {};
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA; // Use schema in production
+}
 module.exports = {
   async up (queryInterface, Sequelize) {
     /**
@@ -57,7 +61,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true, 
       },
-    });
+    }, options);
   },
   
 
@@ -68,6 +72,7 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('Images')
+    options.tableName = 'Images';
+    await queryInterface.dropTable(options);
   }
 };

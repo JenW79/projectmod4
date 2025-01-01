@@ -37,4 +37,8 @@ router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
 });
 
+router.get('/', (req, res) => {
+  res.json({ message: 'Backend is running!' });
+});
+
 module.exports = router;

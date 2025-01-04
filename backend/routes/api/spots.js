@@ -119,9 +119,9 @@ router.get('/current', requireAuth, async (req, res, next) => {
       ],
       include: [
         { model: Review, as:'Reviews', attributes: [] },
-        { model: Image, as: 'SpotImages', attributes: [] },
+        { model: Image, as: 'SpotImages', attributes: ['url'] },
       ],
-      group: ['Spot.id'],
+      group: ['Spot.id', 'SpotImages.id'],
     });
 
     res.json({ spots });

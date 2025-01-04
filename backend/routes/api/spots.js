@@ -96,33 +96,31 @@ const filters = {};
 // Get spots created by the current user (authenticated)
 router.get('/current', requireAuth, async (req, res, next) => {
   const userId = req.user.id;
-
-  try {
-    const spots = await Spot.findAll({
-      where: { ownerId: userId },
-      attributes: [
-        'id',
-        'ownerId',
-        'name',
-        'address',
-        'city',
-        'state',
-        'country',
-        'lat',
-        'lng',
-        'description',
-        'price',
-        'createdAt',
-        'updatedAt',
-        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-        [Sequelize.col('SpotImages.url'), 'previewImage'],
-      ],
-      include: [
-        { model: Review, as:'Reviews', attributes: [] },
-        { model: Image, as: 'SpotImages', attributes: [] },
-      ],
-      group: ['Spot.id'],
-    });
+ try{
+  const spots = await Spot.findAll({
+    where: { ownerId: userId },
+    attributes: [
+      'id',
+      'ownerId',
+      'name',
+      'address',
+      'city',
+      'state',
+      'country',
+      'lat',
+      'lng',
+      'description',
+      'price',
+      'createdAt',
+      'updatedAt',
+      [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
+    ],
+    include: [
+      { model: Review, as: 'Reviews', attributes: [] },
+      { model: Image, as: 'SpotImages', attributes: ['url'] },
+    ],
+    group: ['Spot.id', 'SpotImages.id'],
+  });
 
     res.json({ spots });
   } catch (err) {

@@ -48,8 +48,6 @@ router.post(
 
     const safeUser = {
       id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
       email: user.email,
       username: user.username,
     };
@@ -75,26 +73,17 @@ router.post(
 router.get(
     '/',
     restoreUser,
-    async (req, res) => {
+    (req, res) => {
       const { user } = req;
       if (user) {
+        // Fetch the user data from the database to include all attributes
         const fetchedUser = await User.findByPk(user.id, {
           attributes: ['id', 'firstName', 'lastName', 'email', 'username']
         });
-        if (fetchedUser) {
-          const safeUser = {
-            id: fetchedUser.id,
-            firstName: fetchedUser.firstName,
-            lastName: fetchedUser.lastName,
-            email: fetchedUser.email,
-            username: fetchedUser.username,
-          };
-          return res.json({
-            user: safeUser
-          });
-        }
-      }
-      return res.json({ user: null });
+        return res.json({
+          user: safeUser
+        });
+      } else return res.json({ user: null });
     }
   );
   

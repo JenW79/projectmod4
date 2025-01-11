@@ -37,7 +37,6 @@ const validateSignup = [
   handleValidationErrors
 ];
 
-//Signup
 router.post(
   '/',
   validateSignup,
@@ -70,8 +69,8 @@ router.post(
       });
     } catch (err) {
       if (err.name === 'SequelizeUniqueConstraintError') {
-        return res.status(500).json({
-          message: 'User already exists',
+        return res.status(400).json({
+          message: 'Validation error',
           errors: {
             email: 'User with that email already exists',
             username: 'User with that username already exists'

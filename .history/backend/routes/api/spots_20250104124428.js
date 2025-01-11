@@ -23,98 +23,73 @@ router.get('/', async (req, res, next) => {
     minPrice,
     maxPrice,
   } = req.query;
+  const where = {};
 
-  // Parse and validate integers for page and size
+  // Parse integers for page and size
   page = parseInt(page, 10);
   size = parseInt(size, 10);
 
-  const errors = {};
+  // Enforce defaults and limits
+  if (isNaN(page) || page < 1) page = 1; // Default to page 1 if invalid
+  if (isNaN(size) || size < 1 || size > 100) size = 20; // Default to size 20 if invalid
 
-  // Validate page and size
-  if (isNaN(page) || page < 1) {
-    errors.page = 'Page must be a number greater than or equal to 1.';
-  }
-  if (isNaN(size) || size < 1 || size > 100) {
-    errors.size = 'Size must be a number between 1 and 100.';
-  }
+  const errors = [];
+if (page < 1 || isNaN(page)) errors.push('Page must be a number greater than or equal to 1.');
+if (size < 1 || isNaN(size)) errors.push('Size must be a number greater than or equal to 1.');
+if (minPrice && minPrice < 0) errors.push('Minimum price must be greater than or equal to 0.');
+if (maxPrice && maxPrice < 0) errors.push('Maximum price must be greater than or equal to 0.');
 
-  // Validate latitude and longitude
-  if (minLat && isNaN(parseFloat(minLat))) {
-    errors.minLat = 'Minimum latitude must be a valid number.';
-  }
-  if (maxLat && isNaN(parseFloat(maxLat))) {
-    errors.maxLat = 'Maximum latitude must be a valid number.';
-  }
-  if (minLng && isNaN(parseFloat(minLng))) {
-    errors.minLng = 'Minimum longitude must be a valid number.';
-  }
-  if (maxLng && isNaN(parseFloat(maxLng))) {
-    errors.maxLng = 'Maximum longitude must be a valid number.';
-  }
-
-  // Validate price range
-  if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0)) {
-    errors.minPrice = 'Minimum price must be a number greater than or equal to 0.';
-  }
-  if (maxPrice && (isNaN(parseFloat(maxPrice)) || maxPrice < 0)) {
-    errors.maxPrice = 'Maximum price must be a number greater than or equal to 0.';
-  }
-
-  // If there are validation errors, return a 400 error
-  if (Object.keys(errors).length > 0) {
-    const err = new Error('Validation error');
-    err.status = 400;
-    err.errors = errors;
-    return next(err);
-  }
-
-  // Prepare filters for query
-  const filters = {};
-  if (minLat) filters.lat = { [Op.gte]: parseFloat(minLat) };
-  if (maxLat) filters.lat = { ...filters.lat, [Op.lte]: parseFloat(maxLat) };
-  if (minLng) filters.lng = { [Op.gte]: parseFloat(minLng) };
-  if (maxLng) filters.lng = { ...filters.lng, [Op.lte]: parseFloat(maxLng) };
-  if (minPrice) filters.price = { [Op.gte]: parseFloat(minPrice) };
-  if (maxPrice) filters.price = { ...filters.price, [Op.lte]: parseFloat(maxPrice) };
+if (errors.length) {
+  const err = new Error('Validation error');
+  err.status = 400;
+  err.errors = errors;
+  return next(err);
+}
+const filters = {};
+  if (minLat) filters.lat = { [Op.gte]: minLat };
+  if (maxLat) filters.lat = { ...filters.lat, [Op.lte]: maxLat };
+  if (minLng) filters.lng = { [Op.gte]: minLng };
+  if (maxLng) filters.lng = { ...filters.lng, [Op.lte]: maxLng };
+  if (minPrice) filters.price = { [Op.gte]: minPrice };
+  if (maxPrice) filters.price = { ...filters.price, [Op.lte]: maxPrice }
 
   // Ensure valid pagination
   const limit = size;
   const offset = (page - 1) * size;
+   
+  try{
+  const spots = await Spot.findAll({
+    where: filters,
+    limit,
+    offset,
+    include: [
+      {
+        model: Image,
+        as: 'SpotImages',
+        attributes: ['url'],
+        where: { preview: true },
+        required: false,
+      },
+    ],
+  });
 
-  try {
-    const spots = await Spot.findAll({
-      where: filters,
-      limit,
-      offset,
-      include: [
-        {
-          model: Image,
-          as: 'SpotImages',
-          attributes: ['url'],
-          where: { preview: true },
-          required: false,
-        },
-      ],
-    });
+  // Format spots to include previewImage
+  const formattedSpots = spots.map((spot) => {
+    const spotData = spot.toJSON();
+    return {
+      ...spotData,
+      previewImage: spotData.SpotImages?.[0]?.url || null,
+    };
+  });
 
-    // Format spots to include previewImage
-    const formattedSpots = spots.map((spot) => {
-      const spotData = spot.toJSON();
-      return {
-        ...spotData,
-        previewImage: spotData.SpotImages?.[0]?.url || null,
-      };
-    });
-
-    // Return the response
-    res.json({
-      spots: formattedSpots,
-      page: parseInt(page),
-      size: parseInt(size),
-    });
-  } catch (err) {
-    next(err);
-  }
+  res.json({
+    spots: formattedSpots,
+    page: parseInt(page),
+    size: parseInt(size),
+  });
+} catch (err) {
+  next(err);
+}
 });
 
 
@@ -376,8 +351,8 @@ router.post(
         where: { spotId, userId: req.user.id },
       });
       if (existingReview) {
-        const err = new Error('User already has a review for this spot');
-        err.status = 500;
+        const err = new Error('User has already reviewed this spot');
+        err.status = 403;
         return next(err);
       }
 

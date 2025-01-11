@@ -48,8 +48,6 @@ router.post(
 
     const safeUser = {
       id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
       email: user.email,
       username: user.username,
     };
@@ -74,27 +72,18 @@ router.post(
   // Restore session user
 router.get(
     '/',
-    restoreUser,
-    async (req, res) => {
+    (req, res) => {
       const { user } = req;
       if (user) {
-        const fetchedUser = await User.findByPk(user.id, {
-          attributes: ['id', 'firstName', 'lastName', 'email', 'username']
+        const safeUser = {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        };
+        return res.json({
+          user: safeUser
         });
-        if (fetchedUser) {
-          const safeUser = {
-            id: fetchedUser.id,
-            firstName: fetchedUser.firstName,
-            lastName: fetchedUser.lastName,
-            email: fetchedUser.email,
-            username: fetchedUser.username,
-          };
-          return res.json({
-            user: safeUser
-          });
-        }
-      }
-      return res.json({ user: null });
+      } else return res.json({ user: null });
     }
   );
   

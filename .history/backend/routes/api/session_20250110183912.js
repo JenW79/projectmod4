@@ -48,8 +48,6 @@ router.post(
 
     const safeUser = {
       id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
       email: user.email,
       username: user.username,
     };
@@ -75,7 +73,7 @@ router.post(
 router.get(
     '/',
     restoreUser,
-    async (req, res) => {
+    (req, res) => {
       const { user } = req;
       if (user) {
         const fetchedUser = await User.findByPk(user.id, {

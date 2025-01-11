@@ -37,41 +37,38 @@ const validateSignup = [
   handleValidationErrors
 ];
 
-//Signup
+// Sign up
 router.post(
-  '/',
-  validateSignup,
-  async (req, res, next) => {
-    const { firstName, lastName, email, username, password } = req.body;
+    '/',
+    validateSignup,
+    async (req, res, next) => {
+      const { firstName, lastName, email, password, username } = req.body;
 
-    try {
+      try{
       const hashedPassword = bcrypt.hashSync(password);
-
       const user = await User.create({
-        firstName,
-        lastName,
         email,
         username,
+        firstName,
+        lastName,
         hashedPassword
       });
-
+  
       const safeUser = {
         id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
         email: user.email,
         username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName
       };
-
+  
       await setTokenCookie(res, safeUser);
-
-      return res.status(201).json({
-        user: safeUser
-      });
+  
     } catch (err) {
+      
       if (err.name === 'SequelizeUniqueConstraintError') {
-        return res.status(500).json({
-          message: 'User already exists',
+        return res.status(400).json({
+          message: 'Validation error',
           errors: {
             email: 'User with that email already exists',
             username: 'User with that username already exists'

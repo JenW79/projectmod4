@@ -121,31 +121,6 @@ router.get('/', async (req, res, next) => {
 // Get spots created by the current user (authenticated)
 router.get('/current', requireAuth, async (req, res, next) => {
   const userId = req.user.id;
- try{
-  const spots = await Spot.findAll({
-    where: { ownerId: userId },
-    attributes: [
-      'id',
-      'ownerId',
-      'name',
-      'address',
-      'city',
-      'state',
-      'country',
-      'lat',
-      'lng',
-      'description',
-      'price',
-      'createdAt',
-      'updatedAt',
-      [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
-    ],
-    include: [
-      { model: Review, as: 'Reviews', attributes: [] },
-      { model: Image, as: 'SpotImages', attributes: ['url'] },
-    ],
-    group: ['Spot.id', 'SpotImages.id'],
-  });
 
   try {
     const spots = await Spot.findAll({
@@ -168,7 +143,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
         [Sequelize.col('SpotImages.url'), 'previewImage'],
       ],
       include: [
-        { model: Review, as:'Reviews', attributes: [] },
+        { model: Review, as: 'Reviews', attributes: [] },
         { model: Image, as: 'SpotImages', attributes: ['url'] },
       ],
       group: ['Spot.id', 'SpotImages.id'],
@@ -176,9 +151,10 @@ router.get('/current', requireAuth, async (req, res, next) => {
 
     res.json({ spots });
   } catch (err) {
-    next(err);
+    next(err); // Properly handles errors
   }
-})
+});
+
 
 //get spot by id
 router.get('/:spotId', async (req, res, next) => {

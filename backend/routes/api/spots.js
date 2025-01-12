@@ -147,6 +147,33 @@ router.get('/current', requireAuth, async (req, res, next) => {
     group: ['Spot.id', 'SpotImages.id'],
   });
 
+  try {
+    const spots = await Spot.findAll({
+      where: { ownerId: userId },
+      attributes: [
+        'id',
+        'ownerId',
+        'name',
+        'address',
+        'city',
+        'state',
+        'country',
+        'lat',
+        'lng',
+        'description',
+        'price',
+        'createdAt',
+        'updatedAt',
+        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
+        [Sequelize.col('SpotImages.url'), 'previewImage'],
+      ],
+      include: [
+        { model: Review, as:'Reviews', attributes: [] },
+        { model: Image, as: 'SpotImages', attributes: ['url'] },
+      ],
+      group: ['Spot.id', 'SpotImages.id'],
+    });
+
     res.json({ spots });
   } catch (err) {
     next(err);

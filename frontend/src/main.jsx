@@ -1,5 +1,5 @@
 // frontend/src/main.jsx
-
+import { restoreCSRF, csrfFetch } from './store/csrf';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -10,6 +10,8 @@ import configureStore from '../src/store/store';
 const store = configureStore();
 
 if (process.env.NODE_ENV !== 'production') {
+  restoreCSRF();
+  window.csrfFetch = csrfFetch;
   window.store = store;
 }
 

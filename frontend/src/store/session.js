@@ -14,6 +14,32 @@ const removeUser = () => ({
   type: REMOVE_USER,
 });
 
+//Thunk Action: Sign up a user
+export const signup = (user) => async (dispatch) => {
+  const { 
+    username, firstName, lastName, email, password 
+  } = user;
+  const response = await csrfFetch("/api/users", {
+    method: "POST",
+    body: JSON.stringify({
+      username,
+      firstName,
+      lastName,
+      email,
+      password,
+    }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    dispatch(setUser(data.user));
+    return data.user;
+  } else{
+    throw response;
+  }
+};
+
+
 // Thunk Action: Log in a User
 export const login = (user) => async (dispatch) => {
   const { credential, password } = user;

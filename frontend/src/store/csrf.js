@@ -7,6 +7,7 @@ export async function csrfFetch(url, options = {}) {
   options.method = options.method || 'GET';
   // set options.headers to an empty object if there is no headers
   options.headers = options.headers || {};
+  options.credentials = "include";
 
   // if the options.method is not 'GET', then set the "Content-Type" header to
   // "application/json", and set the "XSRF-TOKEN" header to the value of the
@@ -17,12 +18,7 @@ export async function csrfFetch(url, options = {}) {
   }
   // call the default window's fetch with the url and the options passed in
   const res = await window.fetch(url, options);
-  const BASE_URL =
-  import.meta.env.MODE === "production"
-    ? "https://jens-auth-me.onrender.com"
-    : "http://localhost:8000";
-
-   await fetch(BASE_URL + url, options);
+  
 
 
   // if the response status code is 400 or above, then throw an error with the

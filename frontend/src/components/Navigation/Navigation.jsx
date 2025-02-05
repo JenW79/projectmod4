@@ -8,16 +8,13 @@ function Navigation({ isLoaded }) {
 
   return (
     <nav className="navbar">
-      <ul>
+      <ul className="nav-links">
         <li>
           <NavLink to="/">Home</NavLink>
         </li>
-        {isLoaded && (
-          <li>
-            <ProfileButton user={sessionUser} />
-          </li>
-        )}
       </ul>
+      
+      {isLoaded && <ProfileButton user={sessionUser} />}
     </nav>
   );
 }

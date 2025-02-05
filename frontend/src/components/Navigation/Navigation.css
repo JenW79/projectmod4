@@ -1,74 +1,83 @@
 .navbar {
-    background-color: #333;
-    padding: 10px;
-  }
-  
-  .navbar ul {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-  }
-  
-  .navbar a, .navbar button {
-    color: white;
-    text-decoration: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .profile-container {
-    position: relative;
-    display: inline-block;
-  }
+  background-color: #333;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 100%;
+}
 
-  .profile-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: white;
-    font-size: 24px;
-  }
-  
+.navbar ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
 
-  .profile-dropdown {
-    position: absolute;
-    top: 40px;
-    background: white;
-    list-style: none;
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    min-width: 150px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .profile-dropdown li {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  .profile-dropdown li:hover {
-    background-color: #f2f2f2;
-  }
-  
+.navbar li {
+  display: flex;
+  align-items: center;
+}
 
-  .logout-button {
-    background-color: red;
-    color: rgb(9, 9, 9);
-    padding: 8px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-  }
-  
-  .logout-button:hover {
-    background-color: darkred;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
+/* Ensures the Profile Button stays at the far right */
+.profile-container {
+  margin-left: auto; 
+}
+
+/* Profile Icon */
+.profile-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown Menu */
+.profile-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0; 
+  background: white;
+  list-style: none;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.profile-dropdown li:hover {
+  background-color: #f2f2f2;
+}
+
+/* Logout Button */
+.logout-button {
+  background-color: red;
+  color: white;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.logout-button:hover {
+  background-color: darkred;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,10 +1,18 @@
 .navbar {
-  background-color: #333;
-  padding: 10px;
+  background-color: white;
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between; 
   align-items: center;
+  border-bottom: 1px solid #ddd;
+  max-width: 100%;
   width: 100%;
+}
+.logo {
+  height: auto;
+  max-height: 50px;
+  width: auto;
+  cursor: pointer;
 }
 
 .navbar ul {
@@ -21,22 +29,43 @@
   align-items: center;
 }
 
-/* Ensures the Profile Button stays at the far right */
 .profile-container {
-  margin-left: auto; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 25px; 
+  padding: 5px 12px; 
+  cursor: pointer;
+  height: 35px; 
+  position: relative;
+  margin-right: 20px; 
 }
 
-/* Profile Icon */
+/* Profile Button (Button itself) */
 .profile-icon {
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 3px;
   background: none;
   border: none;
   cursor: pointer;
-  color: white;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
+
+/* Adjust individual icon spacing */
+.menu-icon {
+  font-size: 18px;
+  color: black;
+  margin-left: 5px;
+}
+
+.profile-icon svg { /* Ensures both icons align correctly */
+  font-size: 18px;
+  color: black;
+}
+
 
 /* Dropdown Menu */
 .profile-dropdown {

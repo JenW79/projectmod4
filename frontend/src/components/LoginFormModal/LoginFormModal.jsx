@@ -26,6 +26,11 @@ function LoginFormModal() {
         }
       });
   };
+ 
+  const loginAsDemoUser = () => {
+    dispatch(sessionActions.login({ credential: "Demo-lition", password: "password" }))
+      .then(closeModal);
+  };
 
   return (
     <div className="login-form-container">
@@ -50,10 +55,17 @@ function LoginFormModal() {
           />
         </label>
         {errors.credential && <p className="error-message">{errors.credential}</p>}
-        <button type="submit">Log In</button>
+        <button type="submit" disabled={credential.length < 4 || password.length < 6}>Log In</button>
+        
+        <button className="demo-user" onClick={loginAsDemoUser}>
+          Log in as Demo User
+        </button>
+        
       </form>
     </div>
   );
 }
+
+
 
 export default LoginFormModal;

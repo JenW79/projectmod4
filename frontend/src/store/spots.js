@@ -17,6 +17,19 @@ export const fetchAllSpots = createAsyncThunk(
   }
 );
 
+export const fetchSpotDetails = createAsyncThunk(
+  "spots/fetchSpotDetails",
+  async (spotId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/spots/${spotId}`); 
+      if (!response.ok) throw new Error("Failed to fetch spot details");
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 //  Async Thunk to fetch current user's spots
 export const fetchCurrentUserSpots = createAsyncThunk(
   "spots/fetchCurrentUserSpots",
@@ -39,6 +52,7 @@ const spotsSlice = createSlice({
   initialState: {
     userSpots: [],
     allSpots: [],
+    currentSpot: null,
     status: "idle",
     error: null,
   },
@@ -64,8 +78,10 @@ const spotsSlice = createSlice({
     .addCase(fetchAllSpots.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.payload;
-    });
+    })
+    .addCase(fetchSpotDetails.fulfilled, (state, action) => {
+    state.currentSpot = action.payload; // ✅ Store fetched spot details
+    })
   },
 });
-
 export default spotsSlice.reducer;

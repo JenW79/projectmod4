@@ -24,6 +24,7 @@ function LandingPage() {
           key={spot.id} 
           className="spot-tile" 
           onClick={() => navigate(`/spots/${spot.id}`)} 
+          title={spot.name} 
         >
           <div className="spot-image-container">
             <img 

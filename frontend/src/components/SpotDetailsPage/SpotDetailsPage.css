@@ -1,0 +1,110 @@
+.spot-details-container {
+  padding: 30px;
+  max-width: 900px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+.spot-title {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.spot-location {
+  font-size: 18px;
+  color: #666;
+}
+
+.spot-host {
+  font-size: 16px;
+  font-weight: bold;
+  color: #444;
+}
+
+/* Spot Images */
+.spot-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.large-image {
+  grid-column: span 2;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.small-images {
+  display: flex;
+  justify-content: space-between;
+}
+
+.small-image {
+  width: 23%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Price & Reserve Button */
+.spot-reserve-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.price-box h2 {
+  font-size: 22px;
+}
+
+.reserve-button {
+  background-color: #ff5a5f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.spot-rating {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff9800;
+}
+
+.reviews-section {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.review {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.review:last-child {
+  border-bottom: none;
+}
+
+.post-review-button {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+  

@@ -7,9 +7,11 @@ import { NavLink } from "react-router-dom";
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal/LoginFormModal';
 import SignupFormModal from '../SignupFormModal/SignupFormModal';
+import { useNavigate } from "react-router-dom";
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
 
@@ -36,10 +38,11 @@ function ProfileButton({ user }) {
   // Close menu when modal opens or user logs out
   const closeMenu = () => setShowMenu(false);
 
-  const logout = (e) => {
+  const logout = async (e) => {
     e.preventDefault();
-    dispatch(sessionActions.logout());
-    closeMenu(); 
+    await dispatch(sessionActions.logout()); 
+    closeMenu();
+    navigate("/");
   };
 
   const ulClassName = `profile-dropdown ${showMenu ? '' : 'hidden'}`;

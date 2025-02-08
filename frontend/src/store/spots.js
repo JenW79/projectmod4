@@ -1,5 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+export const fetchAllSpots = createAsyncThunk(
+  "spots/fetchAllSpots",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("/api/spots");
+      if (!response.ok) {
+        throw new Error("Failed to fetch spots");
+      }
+      const data = await response.json();
+      console.log("🔥 All Spots:", data);
+      return data.spots; 
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 //  Async Thunk to fetch current user's spots
 export const fetchCurrentUserSpots = createAsyncThunk(
   "spots/fetchCurrentUserSpots",
@@ -21,6 +38,7 @@ const spotsSlice = createSlice({
   name: "spots",
   initialState: {
     userSpots: [],
+    allSpots: [],
     status: "idle",
     error: null,
   },
@@ -36,10 +54,18 @@ const spotsSlice = createSlice({
           console.log("🚨 No spots found in payload!");
           state.userSpots = [];
         }
-  
         state.status = "succeeded";
       })
-  }
+    
+    .addCase(fetchAllSpots.fulfilled, (state, action) => {
+      state.allSpots = action.payload; 
+      state.status = "succeeded";
+    })
+    .addCase(fetchAllSpots.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    });
+  },
 });
 
 export default spotsSlice.reducer;

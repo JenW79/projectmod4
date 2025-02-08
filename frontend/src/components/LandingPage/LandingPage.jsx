@@ -1,0 +1,52 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllSpots } from "../../store/spots"; 
+import { useNavigate } from "react-router-dom";
+import "../LandingPage/LandingPage.css";
+
+function LandingPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const spots = useSelector((state) => state.spots.allSpots);
+
+  useEffect(() => {
+    dispatch(fetchAllSpots());
+  }, [dispatch]);
+
+  if (!spots || spots.length === 0) {
+    return <h2>Loading spots...</h2>;
+  }
+
+  return (
+    <div className="spots-container">
+      {spots.map((spot) => (
+        <div 
+          key={spot.id} 
+          className="spot-tile" 
+          onClick={() => navigate(`/spots/${spot.id}`)} 
+        >
+          <div className="spot-image-container">
+            <img 
+              src={spot.previewImage} 
+              alt={spot.name} 
+              className="spot-image" 
+            />
+          </div>
+          <div className="spot-info">
+            <div className="spot-location">
+              {spot.city}, {spot.state}
+            </div>
+            <div className="spot-price">
+              ${spot.price} <span>/ night</span>
+            </div>
+            <div className="spot-rating">
+              {spot.avgRating ? `⭐ ${spot.avgRating.toFixed(1)}` : "New"}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default LandingPage;

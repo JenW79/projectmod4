@@ -86,10 +86,21 @@
   padding: 10px;
   cursor: pointer;
   text-align: left;
+  font-size: 14px;
 }
 
 .profile-dropdown li:hover {
   background-color: #f2f2f2;
+}
+
+/* Manage Spots Link */
+.manage-spots {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.manage-spots:hover {
+  text-decoration: underline;
 }
 
 /* Logout Button */

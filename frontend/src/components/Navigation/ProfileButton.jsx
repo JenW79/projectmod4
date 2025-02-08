@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { FaUserCircle } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 import * as sessionActions from '../../store/session';
+import { NavLink } from "react-router-dom";
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal/LoginFormModal';
 import SignupFormModal from '../SignupFormModal/SignupFormModal';
@@ -53,9 +54,12 @@ function ProfileButton({ user }) {
         <ul className={ulClassName} ref={ulRef}>
           {user ? (
             <>
-              <li>{user.username}</li>
+              <li> Hello, {user.username}</li>
               <li>{user.firstName} {user.lastName}</li>
               <li>{user.email}</li>
+              <NavLink to="/spots/current">
+              <li className="manage-spots">Manage Spots</li>
+              </NavLink>
               <li>
                 <button className="logout-button" onClick={logout}>Log Out</button>
               </li>

@@ -25,7 +25,7 @@ module.exports = {
           userId: 1,
           spotId: 1,
           reviewId: null,
-          url: 'https://example.com/image1.jpg',
+          url: 'https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739062883/Screenshot_2025-02-08_185652_xvldh4.png',
           status: 'active',
           preview: true,
           createdAt: new Date(),
@@ -34,18 +34,18 @@ module.exports = {
         {
           userId: 2,
           spotId: 2,
-          reviewId: 1,
-          url: 'https://example.com/image2.jpg',
-          status: 'inactive',
-          preview: false,
+          reviewId: null,
+          url: 'https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739062883/Screenshot_2025-02-08_185855_shmknn.png',
+          status: 'active',
+          preview: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
           userId: 3,
-          spotId: null,
-          reviewId: 2,
-          url: 'https://example.com/image3.jpg',
+          spotId: 3,
+          reviewId: null,
+          url: 'https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739062883/Screenshot_2025-02-08_190005_el8lbn.png',
           status: 'active',
           preview: true,
           createdAt: new Date(),
@@ -67,9 +67,9 @@ module.exports = {
     await queryInterface.bulkDelete(options, {
       url: {
         [Op.in]: [
-          'https://example.com/image1.jpg',
-          'https://example.com/image2.jpg',
-          'https://example.com/image3.jpg',
+          'https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739062883/Screenshot_2025-02-08_185652_xvldh4.png',
+          'https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739062883/Screenshot_2025-02-08_190005_el8lbn.png',
+          'https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739062883/Screenshot_2025-02-08_185855_shmknn.png',
         ],
       },
     });

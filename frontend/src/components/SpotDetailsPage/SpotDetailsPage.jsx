@@ -28,15 +28,18 @@ function SpotDetailsPage() {
       <h3 className="spot-location">{spot.city}, {spot.state}</h3>
       <p className="spot-host">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
 
-      
       <div className="spot-images">
-        <img src={spot.previewImage} alt={spot.name} className="large-image" />
-        <div className="small-images">
-          {spot.SpotImages?.slice(0, 4).map((image, index) => (
-            <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
-          ))}
-        </div>
-      </div>
+  <img 
+    src={spot.previewImage || spot.SpotImages?.[0]?.url} 
+    alt={spot.name} 
+    className="large-image" 
+  />
+  <div className="small-images">
+    {spot.SpotImages?.slice(1, 5).map((image, index) => (
+      <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
+    ))}
+  </div>
+</div>
 
       
       <div className="spot-reserve-section">

@@ -154,13 +154,13 @@ router.get('/current', requireAuth, async (req, res, next) => {
 })
 
 //get spot by id
-router.get('/:spotId', async (req, res, next) => {
+router.get("/:spotId", async (req, res, next) => {
   const { spotId } = req.params;
 
   try {
     const spot = await Spot.findByPk(spotId, {
       attributes: [
-        'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 
+        'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng',
         'name', 'description', 'price', 'createdAt', 'updatedAt',
         [Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), 'numReviews'],
         [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgStarRating'],
@@ -179,6 +179,18 @@ router.get('/:spotId', async (req, res, next) => {
       return next(err);
     }
 
+    // Ensure `previewImage` is set correctly
+    let previewImage = null;
+    if (spot.SpotImages.length > 0) {
+      const preview = spot.SpotImages.find(img => img.preview);
+      previewImage = preview ? preview.url : spot.SpotImages[0].url;
+    }
+
+    // Ensure SpotImages always contains at least one image
+    if (spot.SpotImages.length === 0) {
+      spot.SpotImages.push({ id: -1, url: "https://your-default-placeholder.com/default.jpg", preview: true });
+    }
+
     const response = {
       id: spot.id,
       ownerId: spot.ownerId,
@@ -195,6 +207,7 @@ router.get('/:spotId', async (req, res, next) => {
       updatedAt: spot.updatedAt,
       numReviews: spot.getDataValue('numReviews'),
       avgStarRating: parseFloat(spot.getDataValue('avgStarRating')) || null,
+      previewImage,  
       SpotImages: spot.SpotImages,
       Owner: spot.Owner,
     };
@@ -204,6 +217,7 @@ router.get('/:spotId', async (req, res, next) => {
     next(error);
   }
 });
+
 
 
 // Create a spot (authenticated)

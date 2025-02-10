@@ -142,16 +142,27 @@ router.get('/current', requireAuth, async (req, res, next) => {
     ],
     include: [
       { model: Review, as: 'Reviews', attributes: [] },
-      { model: Image, as: 'SpotImages', attributes: ['url'] },
+      { model: Image, as: 'SpotImages', attributes: ['url', 'preview'], required: false },
     ],
     group: ['Spot.id', 'SpotImages.id'],
   });
 
-    res.json({ spots });
-  } catch (err) {
-    next(err);
-  }
-})
+  // Ensure every spot has a `previewImage`
+  const formattedSpots = spots.map((spot) => {
+    const spotData = spot.toJSON();
+    const preview = spotData.SpotImages.find(img => img.preview) || spotData.SpotImages[0];
+
+    return {
+      ...spotData,
+      previewImage: preview ? preview.url : null, //  Assign the preview image correctly
+    };
+  });
+
+  res.json({ spots: formattedSpots });
+} catch (err) {
+  next(err);
+}
+});
 
 //get spot by id
 router.get("/:spotId", async (req, res, next) => {

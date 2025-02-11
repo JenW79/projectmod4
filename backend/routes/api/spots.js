@@ -233,29 +233,58 @@ router.get("/:spotId", async (req, res, next) => {
 
 // Create a spot (authenticated)
 router.post(
-  '/',
-  requireAuth, 
+  "/",
+  requireAuth,
   [
-    check('name').exists({ checkFalsy: true }).withMessage('Name is required'),
-    
-  ], spotValidation,
+    check("name").exists({ checkFalsy: true }).withMessage("Name is required"),
+    check("description")
+      .isLength({ min: 30 })
+      .withMessage("Description must be at least 30 characters."),
+    check("price")
+      .isFloat({ min: 1 })
+      .withMessage("Price must be a number greater than 0."),
+    check("address").exists({ checkFalsy: true }).withMessage("Address is required"),
+    check("city").exists({ checkFalsy: true }).withMessage("City is required"),
+    check("state").exists({ checkFalsy: true }).withMessage("State is required"),
+    check("country").exists({ checkFalsy: true }).withMessage("Country is required"),
+    check("previewImage").isURL().withMessage("Preview image must be a valid URL."),
+  ],
   async (req, res, next) => {
-    const { name, description, price, lat, lng, address, city, state, country } = req.body;
+    try {
+      console.log("Received request body:", req.body); // Debugging log
 
-    const newSpot = await Spot.create({
-      name,
-      description,
-      city,
-      state,
-      country,
-      price,
-      lat,
-      lng,
-      address,
-      ownerId: req.user.id, 
-    });
+      const { name, description, price, lat, lng, address, city, state, country, previewImage } = req.body;
 
-    res.status(201).json(newSpot);
+      const newSpot = await Spot.create({
+        name,
+        description,
+        city,
+        state,
+        country,
+        price,
+        lat: lat || null,
+        lng: lng || null,
+        address,
+        ownerId: req.user.id,
+      });
+
+      console.log("Successfully created spot:", newSpot.toJSON()); // Log success
+
+      //  Add preview image to Image model
+      const newImage = await Image.create({
+        spotId: newSpot.id,
+        userId: req.user.id,
+        url: previewImage,
+        preview: true,
+      });
+
+      console.log("Successfully added preview image:", newImage.toJSON()); //  Log success
+
+      return res.status(201).json({ newSpot, previewImage: newImage.url });
+    } catch (err) {
+      console.error("Error in POST /api/spots:", err);
+      next(err);
+    }
   }
 );
 
@@ -331,40 +360,29 @@ router.delete('/:id', requireAuth, async (req, res, next) => {
 });
 
 // Add an image to a spot
-router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   const { spotId } = req.params;
-  const { url, preview } = req.body;
+  const { images } = req.body; // Expecting an array of image URLs
 
   try {
-    // Check if the spot exists
     const spot = await Spot.findByPk(spotId);
 
     if (!spot) {
-      const err = new Error("Spot couldn't be found");
-      err.status = 404;
-      return next(err);
+      return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
-    // Check if the authenticated user owns the spot
     if (spot.ownerId !== req.user.id) {
-      const err = new Error('Forbidden: You are not authorized to add an image to this spot.');
-      err.status = 403;
-      return next(err);
+      return res.status(403).json({ message: "Forbidden: You do not own this spot" });
     }
 
-    // Create the new image
-    const newImage = await Image.create({
-      spotId,
-      userId: req.user.id,
-      url,
-      preview,
-    });
+    // Insert multiple images into Image model
+    const createdImages = await Promise.all(
+      images.map((url) =>
+        Image.create({ spotId, userId: req.user.id, url, preview: false })
+      )
+    );
 
-    res.status(201).json({
-      id: newImage.id,
-      url: newImage.url,
-      preview: newImage.preview,
-    });
+    res.status(201).json(createdImages);
   } catch (err) {
     next(err);
   }

@@ -39,6 +39,13 @@ module.exports = (sequelize, DataTypes) => {
 
   Spot.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+
       ownerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -68,11 +75,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       lat: {
         type: DataTypes.FLOAT, 
-        allowNull: false
+        allowNull: true
       },
       lng: {
         type: DataTypes.FLOAT, 
-        allowNull: false
+        allowNull: true
       },
       description: DataTypes.TEXT,
       price: {

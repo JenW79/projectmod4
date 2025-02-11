@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
 // Fetch all spots
 export const fetchAllSpots = createAsyncThunk(
@@ -74,7 +75,9 @@ export const createSpot = createAsyncThunk(
     try {
       const response = await fetch("/api/spots", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          "XSRF-Token": Cookies.get("XSRF-TOKEN") 
+        },
         body: JSON.stringify(spotData),
       });
 

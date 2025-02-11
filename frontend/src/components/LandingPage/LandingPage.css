@@ -31,14 +31,31 @@
     height: 100%;
     object-fit: cover;
   }
+  .spot-rating {
+    font-size: 14px;
+    color: #ff9800;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 10px;
+    margin-top: 5px;
+    min-width: 60px;
+  }
   
+  .spot-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+  }
+
   .spot-info {
     padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 2px;
+    text-align: left;
   }
-  
+
   .spot-location {
     font-weight: bold;
   }
@@ -49,8 +66,4 @@
     font-weight: bold;
   }
   
-  .spot-rating {
-    font-size: 14px;
-    color: #ff9800;
-  }
   

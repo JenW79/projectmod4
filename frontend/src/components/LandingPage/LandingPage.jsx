@@ -19,34 +19,39 @@ function LandingPage() {
 
   return (
     <div className="spots-container">
-      {spots.map((spot) => (
-        <div 
-          key={spot.id} 
-          className="spot-tile" 
-          onClick={() => navigate(`/spots/${spot.id}`)} 
-          title={spot.name} 
-        >
-          <div className="spot-image-container">
-            <img 
-              src={spot.previewImage} 
-              alt={spot.name} 
-              className="spot-image" 
-            />
+  {spots.map((spot) => (
+    <div 
+      key={spot.id} 
+      className="spot-tile" 
+      onClick={() => navigate(`/spots/${spot.id}`)} 
+      title={spot.name} 
+    >
+
+      <div className="spot-image-container">
+        <img 
+          src={spot.previewImage} 
+          alt={spot.name} 
+          className="spot-image" 
+        />
+      </div>
+
+      <div className="spot-info-container">
+        <div className="spot-info">
+          <div className="spot-location">
+            {spot.city}, {spot.state}
           </div>
-          <div className="spot-info">
-            <div className="spot-location">
-              {spot.city}, {spot.state}
-            </div>
-            <div className="spot-price">
-              ${spot.price} <span>/ night</span>
-            </div>
-            <div className="spot-rating">
-              {spot.avgRating ? `⭐ ${spot.avgRating.toFixed(1)}` : "New"}
-            </div>
+          <div className="spot-price">
+            ${spot.price} <span>/ night</span>
           </div>
         </div>
-      ))}
+        
+        <div className="spot-rating">
+          {spot.avgRating ? `⭐ ${spot.avgRating.toFixed(1)}` : "New"}
+        </div>
+      </div>
     </div>
+  ))}
+</div>
   );
 }
 

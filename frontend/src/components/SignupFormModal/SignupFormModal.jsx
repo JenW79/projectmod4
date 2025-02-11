@@ -53,42 +53,42 @@ function SignupFormModal() {
     <div className="signup-form-container">
       <h1>Sign Up</h1>
       <form onSubmit={handleSubmit} className="signup-form">
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
+       
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+          placeholder="Email" />
+        
         {errors.email && <p className="error-message">{errors.email}</p>}
-
-        <label>
-          Username (min. 4 characters)
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </label>
+        
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required 
+          placeholder="Username (min. 4 characters)" />
+        
         {username.length < 4 && username.length > 0 && <p className="error-message">Username must be at least 4 characters</p>}
         {errors.username && <p className="error-message">{errors.username}</p>}
 
-        <label>
-          First Name
-          <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-        </label>
+          
+          <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required 
+          placeholder="First Name"/>
+       
         {errors.firstName && <p className="error-message">{errors.firstName}</p>}
 
-        <label>
-          Last Name
-          <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-        </label>
+        
+         
+          <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required 
+          placeholder= "Last Name" />
+        
         {errors.lastName && <p className="error-message">{errors.lastName}</p>}
 
-        <label>
-          Password (min. 6 characters)
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </label>
+       
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required 
+          placeholder="Password (min. 6 characters)" />
+        
         {password.length < 6 && password.length > 0 && <p className="error-message">Password must be at least 6 characters</p>}
         {errors.password && <p className="error-message">{errors.password}</p>}
 
-        <label>
-          Confirm Password
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-        </label>
+       
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required 
+          placeholder="Confirm Password" />
+        
         {password !== confirmPassword && confirmPassword.length > 0 && <p className="error-message">Passwords do not match</p>}
         {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
 

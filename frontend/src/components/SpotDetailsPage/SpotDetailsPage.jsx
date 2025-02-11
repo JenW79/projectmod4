@@ -23,26 +23,25 @@ function SpotDetailsPage() {
 
   return (
     <div className="spot-details-container">
-     
-     <h1 className="spot-title">{spot.name}</h1>
-      <h3 className="spot-location">{spot.city}, {spot.state}</h3>
-      <p className="spot-host">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
+  <h1 className="spot-title">{spot.name}</h1>
+  <h3 className="spot-location">{spot.city}, {spot.state}</h3>
+  <p className="spot-host">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
 
-      <div className="spot-images">
-  <img 
-    src={spot.previewImage || spot.SpotImages?.[0]?.url} 
-    alt={spot.name} 
-    className="large-image" 
-  />
-  <div className="small-images">
-    {spot.SpotImages?.slice(1, 5).map((image, index) => (
-      <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
-    ))}
+  <div className="spot-images">
+    <img 
+      src={spot.previewImage || spot.SpotImages?.[0]?.url} 
+      alt={spot.name} 
+      className="large-image" 
+    />
+    <div className="small-images">
+      {spot.SpotImages?.slice(1, 5).map((image, index) => (
+        <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
+      ))}
+    </div>
   </div>
-</div>
 
-      
-      <div className="spot-reserve-section">
+  
+  <div className="spot-reserve-section">
         <div className="price-box">
           <h2>${spot.price} <span>/ night</span></h2>
         </div>

@@ -270,17 +270,22 @@ router.post(
 
       console.log("Successfully created spot:", newSpot.toJSON()); // Log success
 
-      //  Add preview image to Image model
-      const newImage = await Image.create({
-        spotId: newSpot.id,
-        userId: req.user.id,
-        url: previewImage,
-        preview: true,
-      });
+      // If a preview image was provided, add it to the Images table
+      if (previewImage) {
+        const newImage = await Image.create({
+          spotId: newSpot.id,
+          userId: req.user.id,
+          url: previewImage,
+          preview: true,
+        });
 
-      console.log("Successfully added preview image:", newImage.toJSON()); //  Log success
+        console.log("Successfully added preview image:", newImage.toJSON());
 
-      return res.status(201).json({ newSpot, previewImage: newImage.url });
+        // Update the Spot's previewImage column
+        await newSpot.update({ previewImage: newImage.url });
+      }
+
+      return res.status(201).json(newSpot);
     } catch (err) {
       console.error("Error in POST /api/spots:", err);
       next(err);
@@ -359,10 +364,10 @@ router.delete('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
-// Add an image to a spot
+//add new images to a spot
 router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   const { spotId } = req.params;
-  const { images } = req.body; // Expecting an array of image URLs
+  const { images } = req.body; 
 
   try {
     const spot = await Spot.findByPk(spotId);
@@ -377,10 +382,15 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
 
     // Insert multiple images into Image model
     const createdImages = await Promise.all(
-      images.map((url) =>
-        Image.create({ spotId, userId: req.user.id, url, preview: false })
+      images.map((url, index) =>
+        Image.create({ spotId, userId: req.user.id, url, preview: index === 0 })
       )
     );
+
+    // Update the previewImage field in the Spots table with the first image
+    if (createdImages.length > 0) {
+      await spot.update({ previewImage: createdImages[0].url });
+    }
 
     res.status(201).json(createdImages);
   } catch (err) {

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchSpotDetails } from "../../store/spots";
-import "./SpotDetailsPage.css";
+import "../SpotDetailsPage/SpotDetailsPage.css";
 
 function SpotDetailsPage() {
   const { spotId } = useParams(); 
@@ -16,44 +16,51 @@ function SpotDetailsPage() {
 
   if (!spot) return <h2>Loading spot details...</h2>;
 
-  //  Handle "Reserve" button click
+  // Handle "Reserve" button click
   const handleReserve = () => {
     alert("Feature Coming Soon!");
   };
 
   return (
     <div className="spot-details-container">
-  <h1 className="spot-title">{spot.name}</h1>
-  <h3 className="spot-location">{spot.city}, {spot.state}</h3>
-  <p className="spot-host">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
-
-  <div className="spot-images">
-    <img 
-      src={spot.previewImage || spot.SpotImages?.[0]?.url} 
-      alt={spot.name} 
-      className="large-image" 
-    />
-    <div className="small-images">
-      {spot.SpotImages?.slice(1, 5).map((image, index) => (
-        <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
-      ))}
-    </div>
-  </div>
-
-  
-  <div className="spot-reserve-section">
-        <div className="price-box">
-          <h2>${spot.price} <span>/ night</span></h2>
+      <h1 className="spot-title">{spot.name}</h1>
+      <p className="spot-location">{spot.city}, {spot.state}, {spot.country}</p>
+      
+      <div className="spot-images">
+        <img 
+          src={spot.previewImage || spot.SpotImages?.[0]?.url} 
+          alt={spot.name} 
+          className="large-image" 
+        />
+        <div className="small-images">
+          {spot.SpotImages?.slice(1, 5).map((image, index) => (
+            <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
+          ))}
         </div>
-        <button onClick={handleReserve} className="reserve-button">Reserve</button>
+      </div>
+      
+      <p className="spot-host">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
+      
+      <div className="spot-info-container2">
+        <div className="spot-description">
+          <p>{spot.description}</p>
+        </div>
+        <div className="spot-reserve-section">
+  <div className="price-rating-container">
+    <h3 className="price-box">${spot.price} <span>night</span></h3>
+    <p className="spot-rating1">⭐ {spot.avgRating ? spot.avgRating.toFixed(1) : "New"} · {spot.numReviews} reviews</p>
+  </div>
+  <button onClick={handleReserve} className="reserve-button">Reserve</button>
+</div>
+
       </div>
 
-      <div className="spot-rating">
-        <h2>⭐ {spot.avgRating ? spot.avgRating.toFixed(1) : "New"} ({spot.numReviews} reviews)</h2>
+      <div className="spot-rating-container">
+        <h3>⭐ {spot.avgRating ? spot.avgRating.toFixed(1) : "New"} · {spot.numReviews} reviews</h3>
       </div>
 
       <div className="reviews-section">
-        <h2>Reviews</h2>
+        <h3>Reviews</h3>
         {spot.Reviews?.length > 0 ? (
           [...spot.Reviews].reverse().map((review) => (
             <div key={review.id} className="review">

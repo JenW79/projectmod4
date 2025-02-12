@@ -38,14 +38,24 @@ function CreateSpotForm() {
    
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     let newErrors = {};
+     
+    const imageRegex = /\.(png|jpg|jpeg)$/i;
+
     if (formData.description.length < 30) {
       newErrors.description = "Description must be at least 30 characters.";
     }
-    if (!formData.previewImage) {
-      newErrors.previewImage = "At least one image is required.";
+    if (!formData.previewImage || !imageRegex.test(formData.previewImage)) {
+      newErrors.previewImage = "Preview Image is required.";
     }
+
+    ["image1", "image2", "image3", "image4"].forEach((imageField) => {
+      if (formData[imageField] && !imageRegex.test(formData[imageField])) {
+        newErrors[imageField] = "Each image must be a valid URL ending in .png, .jpg, or .jpeg.";
+      }
+    });
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -91,12 +101,24 @@ function CreateSpotForm() {
       <form onSubmit={handleSubmit}>
         <h3>Where&apos;s your place located?</h3>
         <p>Guests will only get your exact address once they booked a reservation.</p>
-        <input type="text" name="address" placeholder="Street Address" onChange={handleChange} required />
-        <input type="text" name="city" placeholder="City" onChange={handleChange} required />
-        <input type="text" name="state" placeholder="State" onChange={handleChange} required />
         <input type="text" name="country" placeholder="Country" onChange={handleChange} required />
-        <input type="number" name="lat" placeholder="Latitude (Optional)" onChange={handleChange} />
-        <input type="number" name="lng" placeholder="Longitude (Optional)" onChange={handleChange} />
+        <input type="text" name="address" placeholder="Street Address" onChange={handleChange} required />
+        
+        <div className="inline-inputs">
+          <div className="input-group">
+            <input type="text" name="city" placeholder="City" onChange={handleChange} required />
+            <span>,</span>
+            <input type="text" name="state" placeholder="State" onChange={handleChange} required />
+          </div>
+        </div>
+
+        <div className="inline-inputs">
+          <div className="input-group">
+            <input type="number" name="lat" placeholder="Latitude (Optional)" onChange={handleChange} />
+            <span>,</span>
+            <input type="number" name="lng" placeholder="Longitude (Optional)" onChange={handleChange} />
+          </div>
+        </div>
 
         <h3>Describe your place to guests</h3>
         <p>Mention the best features of your space, any special amenities like fast wifi or parking, and what you love about the neighborhood.</p>
@@ -116,9 +138,13 @@ function CreateSpotForm() {
         <input type="url" name="previewImage" placeholder="Preview Image URL" onChange={handleChange} required />
         {errors.previewImage && <p className="error">{errors.previewImage}</p>}
         <input type="url" name="image1" placeholder="Image URL" onChange={handleChange} />
+        {errors.image1 && <p className="error">{errors.image1}</p>}
         <input type="url" name="image2" placeholder="Image URL" onChange={handleChange} />
+        {errors.image1 && <p className="error">{errors.image2}</p>}
         <input type="url" name="image3" placeholder="Image URL" onChange={handleChange} />
+        {errors.image1 && <p className="error">{errors.image3}</p>}
         <input type="url" name="image4" placeholder="Image URL" onChange={handleChange} />
+        {errors.image1 && <p className="error">{errors.image4}</p>}
         
         {errors.api && <p className="error">{errors.api}</p>}
         <button type="submit">Create Spot</button>

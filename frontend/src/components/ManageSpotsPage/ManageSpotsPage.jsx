@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentUserSpots, deleteSpot } from "../../store/spots"; 
@@ -38,10 +37,10 @@ function ManageSpotsPage() {
   
     try {
       await dispatch(deleteSpot(spotId)).unwrap();
+      dispatch(fetchCurrentUserSpots()); // Refresh user's spots after deletion
     } catch (error) {
       console.error("Delete failed:", error);
     }
-    dispatch(fetchCurrentUserSpots()); // Re-fetch user's spots after deletion
   };
 
   return (
@@ -59,15 +58,18 @@ function ManageSpotsPage() {
               className="spot-thumbnail" 
             />
             <div className="spot-info">
-              <h3>{spot.name}</h3>
               <p>{spot.city}, {spot.state}</p>
-              <p>⭐ {spot.avgRating || "New"}</p>
-              <p><strong>${spot.price}</strong> / night</p>
+              <p>⭐ {spot.avgRating || "New"} · {spot.numReviews} reviews</p>
+              <p><strong>${spot.price}</strong> night</p>
             </div>
             <div className="spot-buttons">
-              <button className="update-btn" onClick={() => navigate(`/spots/${spot.id}/edit`)}>Update</button>
-              <button className="delete-btn" onClick={() => handleDelete(spot.id)}>Delete</button>
-            </div>
+        <button className="update-btn" onClick={() => navigate(`/spots/${spot.id}/edit`)}>
+         Update
+       </button>
+        <button className="delete-btn" onClick={() => handleDelete(spot.id)}>
+        Delete
+       </button>
+</div>
           </div>
         ))}
       </div>
@@ -76,6 +78,7 @@ function ManageSpotsPage() {
 }
 
 export default ManageSpotsPage;
+
 
 
 

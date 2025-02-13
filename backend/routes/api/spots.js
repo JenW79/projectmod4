@@ -293,46 +293,42 @@ router.post(
   }
 );
 
-/// Update a spot by the current user
-router.put('/:spotId', requireAuth, spotValidation, async (req, res, next) => {
+// Update a spot by the current user
+router.put("/:spotId", requireAuth, spotValidation, async (req, res, next) => {
   const { spotId } = req.params;
   const { name, description, price, lat, lng, address, city, state, country } = req.body;
 
   try {
-    // Find the spot by the given spotId
+    console.log("📥 Received update request:", req.body);
     const spot = await Spot.findByPk(spotId);
 
     if (!spot) {
-      const err = new Error("Spot couldn't be found");
-      err.status = 404;
-      return next(err);
+      console.error("❌ Spot not found:", spotId);
+      return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
-    // Check if the current user is the owner of the spot
     if (spot.ownerId !== req.user.id) {
-      const err = new Error('Forbidden');
-      err.status = 403;
-      return next(err);
+      console.error("❌ Unauthorized update attempt:", req.user.id);
+      return res.status(403).json({ message: "Forbidden" });
     }
 
-    // Update the spot's details
-    spot.set({
+    // Apply changes and save
+    await spot.update({
       name,
       description,
       price,
-      lat,
-      lng,
+      lat: lat || spot.lat, 
+      lng: lng || spot.lng,
       address,
       city,
       state,
       country,
     });
+    
+    const updatedSpot = await Spot.findByPk(spotId); 
+    console.log("✅ Spot updated successfully:", spot.toJSON());
+    res.status(200).json(updatedSpot);
 
-    // Save the updated spot
-    await spot.save();
-
-    // Return the updated spot as the response
-    res.status(200).json(spot);
   } catch (err) {
     next(err);
   }

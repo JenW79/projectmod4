@@ -93,6 +93,36 @@ export const createSpot = createAsyncThunk(
   }
 );
 
+export const updateSpot = createAsyncThunk(
+  "spots/updateSpot",
+  async ({ spotId, ...updatedData }, { rejectWithValue }) => {
+    try {
+      
+      const response = await fetch(`/api/spots/${spotId}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "XSRF-Token": Cookies.get("XSRF-TOKEN"), 
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+         
+        return rejectWithValue(responseData.message);
+      }
+
+      
+      return responseData;
+    } catch (error) {
+      console.error(" Network or unexpected error:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Spot Slice
 const spotsSlice = createSlice({
   name: "spots",
@@ -145,6 +175,14 @@ const spotsSlice = createSlice({
       .addCase(createSpot.rejected, (state, action) => {
         state.error = action.payload;
       })
+      
+      .addCase(updateSpot.fulfilled, (state, action) => {
+        state.currentSpot = action.payload; 
+        state.userSpots = state.userSpots.map((spot) =>
+          spot.id === action.payload.id ? action.payload : spot
+        );
+        state.status = "succeeded";
+      });
   },
 });
 

@@ -2,24 +2,19 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchSpotDetails } from "../../store/spots";
-import "../SpotDetailsPage/SpotDetailsPage.css";
+import "./SpotDetailsPage.css";
 
 function SpotDetailsPage() {
   const { spotId } = useParams(); 
   const dispatch = useDispatch();
   const spot = useSelector((state) => state.spots.currentSpot);
-  const user = useSelector((state) => state.session.user);
+  
 
   useEffect(() => {
     dispatch(fetchSpotDetails(spotId)); 
   }, [dispatch, spotId]);
 
   if (!spot) return <h2>Loading spot details...</h2>;
-
-  // Handle "Reserve" button click
-  const handleReserve = () => {
-    alert("Feature Coming Soon!");
-  };
 
   return (
     <div className="spot-details-container">
@@ -39,20 +34,23 @@ function SpotDetailsPage() {
         </div>
       </div>
       
-      <p className="spot-host">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
-      
+      <p className="spot-host">
+        {spot.Owner
+         ? `Hosted by ${spot.Owner.firstName} ${spot.Owner.lastName}`
+         : "Loading host info..."}
+      </p>
+
       <div className="spot-info-container2">
         <div className="spot-description">
           <p>{spot.description}</p>
         </div>
         <div className="spot-reserve-section">
-  <div className="price-rating-container">
-    <h3 className="price-box">${spot.price} <span>night</span></h3>
-    <p className="spot-rating1">⭐ {spot.avgRating ? spot.avgRating.toFixed(1) : "New"} · {spot.numReviews} reviews</p>
-  </div>
-  <button onClick={handleReserve} className="reserve-button">Reserve</button>
-</div>
-
+          <div className="price-rating-container">
+            <h3 className="price-box">${spot.price} <span>night</span></h3>
+            <p className="spot-rating1">⭐ {spot.avgRating ? spot.avgRating.toFixed(1) : "New"} · {spot.numReviews} reviews</p>
+          </div>
+          <button className="reserve-button">Reserve</button>
+        </div>
       </div>
 
       <div className="spot-rating-container">
@@ -72,10 +70,6 @@ function SpotDetailsPage() {
           <p>No reviews yet.</p>
         )}
       </div>
-
-      {user && !spot.Reviews?.some((review) => review.userId === user.id) && (
-        <button className="post-review-button">Post Your Review</button>
-      )}
     </div>
   );
 }

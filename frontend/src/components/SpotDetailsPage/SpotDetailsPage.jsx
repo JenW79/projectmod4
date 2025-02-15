@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchSpotDetails } from "../../store/spots";
 import PostReviewModal from "../PostReviewModal/PostReviewModal"; 
+import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal"; 
 import "./SpotDetailsPage.css";
 
 function SpotDetailsPage() {
@@ -13,6 +14,8 @@ function SpotDetailsPage() {
   const user = useSelector((state) => state.session.user);
 
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchSpotDetails(spotId))
@@ -86,21 +89,33 @@ function SpotDetailsPage() {
           </button>
         )}
 
-        {reviewsArray.length > 0 ? (
-          [...reviewsArray].reverse().map((review) => (
-            <div key={review.id} className="review">
-              <strong>{review.User?.firstName || "Anonymous"}</strong>
-              - {new Date(review.createdAt).toDateString()}
-              <p>{review.review}</p>
-            </div>
-          ))
-        ) : (
-          <p>No reviews yet.</p>
-        )}
-      </div>
+{reviewsArray.length > 0 ? (
+  [...reviewsArray].reverse().map((review) => (
+    <div key={review.id} className="review">
+      <strong>{review.User?.firstName || "Anonymous"}</strong>
+      - {new Date(review.createdAt).toDateString()}
+      <p>{review.review}</p>
 
+      {user?.id === review.userId && (
+        <button
+          className="delete-review-btn"
+          onClick={() => {
+            setSelectedReviewId(review.id);
+            setShowDeleteModal(true);
+          }}
+        >
+          Delete
+        </button>
+      )}
+    </div>
+  ))
+) : (
+  <p>No reviews yet.</p>
+)}
+      </div>
       
       {showReviewModal && <PostReviewModal spotId={spotId} onClose={() => setShowReviewModal(false)} />}
+      {showDeleteModal && (<DeleteReviewModal reviewId={selectedReviewId} spotId={spotId} onClose={() => setShowDeleteModal(false)} />)}
     </div>
   );
 }

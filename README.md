@@ -72,4 +72,4 @@ Missing dependencies? Run npm install again in both backend/ and frontend/.
 Database errors? Ensure PostgreSQL is running and .env is correctly
 configured.
 
-Port issues? Check if something is already running on port 5000 (backend) or 5173 (frontend).
+Port issues? Check if something is already running on port 8000 (backend) or 5173 (frontend).

@@ -62,7 +62,7 @@ npm run dev
 Once both the frontend and backend are running:
 ```sh
 Frontend → Open http://localhost:5173
-Backend → Running at http://localhost:5000
+Backend → Running at http://localhost:8000
 ```
 
 ## 🔥**Troubleshooting**

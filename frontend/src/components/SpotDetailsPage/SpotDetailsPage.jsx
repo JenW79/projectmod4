@@ -34,25 +34,34 @@ function SpotDetailsPage() {
   const avgRating = reviewsArray.length ? (totalStars / reviewsArray.length).toFixed(1) : "New";
   
 
-
   return (
     <div className="spot-details-container">
       <h1 className="spot-title">{spot.name}</h1>
       <p className="spot-location">{spot.city}, {spot.state}, {spot.country}</p>
+      
+      <div className="spot-images-container">
+  {/* Main Image */}
+  <img 
+    src={spot.SpotImages?.[0]?.url || "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg"} 
+    alt="Main Spot" 
+    className="main-image" 
+  />
 
-      <div className="spot-images">
-        <img 
-          src={spot.previewImage || spot.SpotImages?.[0]?.url} 
-          alt={spot.name} 
-          className="large-image" 
-        />
-        <div className="small-images">
-          {spot.SpotImages?.slice(1, 5).map((image, index) => (
-            <img key={index} src={image.url} alt={`Spot ${index}`} className="small-image" />
-          ))}
-        </div>
-      </div>
+  {/* Grid for 4 Additional Images */}
+  <div className="grid-images">
+    {[1, 2, 3, 4].map((index) => (
+      <img 
+        key={index} 
+        src={spot.SpotImages?.[index]?.url || "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg"} 
+        alt={`Spot ${index + 1}`} 
+        className="grid-image" 
+      />
+    ))}
+  </div>
+</div>
 
+
+    
       <p className="spot-host">
         {spot.Owner
           ? `Hosted by ${spot.Owner.firstName} ${spot.Owner.lastName}`

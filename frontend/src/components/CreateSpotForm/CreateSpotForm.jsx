@@ -129,7 +129,7 @@ function CreateSpotForm() {
           })
         ).unwrap();
 
-        await fetch(`/api/spots/${newSpot.newSpot.id}/images`, {
+        await fetch(`/api/spots/${newSpot.id}/images`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -138,8 +138,7 @@ function CreateSpotForm() {
             images: [formData.image1, formData.image2, formData.image3, formData.image4].filter(Boolean),
           }),
         });
-
-        navigate(`/spots/${newSpot.newSpot.id}`);
+        navigate(`/spots/${newSpot.id}`);
       }
     } catch (error) {
       setErrors({ api: error.message });

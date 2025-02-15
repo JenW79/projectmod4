@@ -299,16 +299,16 @@ router.put("/:spotId", requireAuth, spotValidation, async (req, res, next) => {
   const { name, description, price, lat, lng, address, city, state, country } = req.body;
 
   try {
-    console.log("📥 Received update request:", req.body);
+    
     const spot = await Spot.findByPk(spotId);
 
     if (!spot) {
-      console.error("❌ Spot not found:", spotId);
+      
       return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
     if (spot.ownerId !== req.user.id) {
-      console.error("❌ Unauthorized update attempt:", req.user.id);
+     
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -425,9 +425,7 @@ router.post(
         where: { spotId, userId: req.user.id },
       });
       if (existingReview) {
-        const err = new Error('User already has a review for this spot');
-        err.status = 500;
-        return next(err);
+        return res.status(403).json({ message: "User already has a review for this spot" });
       }
 
       // Create a new review

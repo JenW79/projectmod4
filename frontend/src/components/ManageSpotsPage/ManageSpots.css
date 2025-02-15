@@ -34,33 +34,104 @@
   justify-content: space-between;
   margin-top: 10px;
 }
-  
 
-  
-  .update-btn, .delete-btn {
+  .update-btn {
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-  }
-  
-  .update-btn {
     background-color: #007bff;
     color: white;
   }
+
+  .delete-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000;
+    width: 450px; 
+  }
   
-  .delete-btn {
+  .modal-content {
+    width: 100%;
+  }
+  
+  .delete-modal h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .delete-modal p {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 20px;
+  }
+  
+  .delete-modal button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+  }
+
+  .confirm-delete {
     background-color: #ff5a5f;
     color: white;
+    font-weight: bold;
+    padding: 15px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+  }
+  
+  .cancel-delete {
+    background: grey;
+    color: white;
+    padding: 8px 16px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
   }
   
   .update-btn:hover {
     background-color: #0056b3;
   }
   
-  .delete-btn:hover {
-    background-color: #cc0000;
+  .confirm-delete:hover {
+    background-color: #e0484d;
+  }
+
+  .cancel-delete {
+    background-color: #444;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+  }
+  
+  .cancel-delete:hover {
+    background-color: #333;
   }
   
   .create-spot-btn {

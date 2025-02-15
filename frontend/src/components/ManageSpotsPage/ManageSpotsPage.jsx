@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCurrentUserSpots, deleteSpot } from "../../store/spots"; 
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,10 @@ function ManageSpotsPage() {
   const spots = useSelector((state) => state.spots.userSpots);
   const status = useSelector((state) => state.spots.status);
   const error = useSelector((state) => state.spots.error);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [spotToDelete, setSpotToDelete] = useState(null);
+
 
   useEffect(() => {
     if (user) dispatch(fetchCurrentUserSpots());
@@ -32,12 +36,15 @@ function ManageSpotsPage() {
     );
   }
 
-  const handleDelete = async (spotId) => {
-    if (!window.confirm("Are you sure you want to delete this spot?")) return;
+ 
+
+  const handleDelete = async () => {
+    if (!spotToDelete) return;
   
     try {
-      await dispatch(deleteSpot(spotId)).unwrap();
-      dispatch(fetchCurrentUserSpots()); // Refresh user's spots after deletion
+      await dispatch(deleteSpot(spotToDelete)).unwrap();
+      dispatch(fetchCurrentUserSpots()); 
+      setShowDeleteModal(false); 
     } catch (error) {
       console.error("Delete failed:", error);
     }
@@ -63,17 +70,32 @@ function ManageSpotsPage() {
               <p><strong>${spot.price}</strong> night</p>
             </div>
             <div className="spot-buttons">
+
+            {showDeleteModal && (
+  <div className="delete-modal">
+    <div className="modal-content">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to remove this spot from the listings?</p>
+      <button className="confirm-delete" onClick={handleDelete}>Yes (Delete Spot)</button>
+      <button className="cancel-delete" onClick={() => setShowDeleteModal(false)}>No (Keep Spot)</button>
+    </div>
+  </div>
+)}
         <button className="update-btn" onClick={() => navigate(`/spots/${spot.id}/edit`)}>
          Update
        </button>
-        <button className="delete-btn" onClick={() => handleDelete(spot.id)}>
-        Delete
-       </button>
-</div>
+       <button className="delete-btn" onClick={() => {
+                 setSpotToDelete(spot.id);
+                setShowDeleteModal(true);
+                  }}>
+                Delete
+              </button>
+        </div>
           </div>
         ))}
       </div>
     </div>
+    
   );
 }
 

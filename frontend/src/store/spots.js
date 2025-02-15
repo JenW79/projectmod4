@@ -25,7 +25,10 @@ export const deleteSpot = createAsyncThunk(
     try {
       const response = await fetch(`/api/spots/${spotId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "XSRF-Token": Cookies.get("XSRF-TOKEN"),
+         },
       });
 
       if (!response.ok) {
@@ -45,13 +48,27 @@ export const fetchSpotDetails = createAsyncThunk(
   async (spotId, { rejectWithValue }) => {
     try {
       const response = await fetch(`/api/spots/${spotId}`);
-      if (!response.ok) throw new Error("Failed to fetch spot details");
-      return await response.json();
+      if (!response.ok) {
+        throw new Error("Failed to fetch spot details");
+      }
+      const spotDetails = await response.json();
+      
+      // Fetch Reviews
+      const reviewsResponse = await fetch(`/api/spots/${spotId}/reviews`);
+      if (reviewsResponse.ok) {
+        const reviews = await reviewsResponse.json();
+        spotDetails.Reviews = reviews; 
+      } else {
+        spotDetails.Reviews = []; 
+      }
+
+      return spotDetails;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 // Fetch current user's spots
 export const fetchCurrentUserSpots = createAsyncThunk(

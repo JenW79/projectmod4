@@ -58,11 +58,12 @@ function ProfileButton({ user }) {
           {user ? (
             <>
               <li> Hello, {user.username || "Guest"}</li>
-              <li>{user.firstName} {user.lastName}</li>
               <li>{user.email || "No Email"}</li>
+              <hr className="solid" />
               <NavLink to="/spots/current">
               <li className="manage-spots">Manage Spots</li>
               </NavLink>
+              <hr className="solid" />
               <li>
                 <button className="logout-button" onClick={logout}>Log Out</button>
               </li>

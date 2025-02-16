@@ -71,19 +71,18 @@
 /* Dropdown Menu */
 .profile-dropdown {
   position: absolute;
-  top: 40px;
-  right: 0; 
+  top: 45px;
+  right: 0;
   background: white;
   border: 2px solid black;
-  box-shadow: 4px 4px 0px black;
   list-style: none;
-  padding: 8px;
-  border-radius: 5px;
+  padding: 10px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   min-width: 180px;
-  text-align: left;
   font-size: 14px;
+  text-align: left;
 }
 
 .profile-dropdown li {
@@ -91,16 +90,29 @@
   cursor: pointer;
   text-align: left;
   font-size: 14px;
+  font-weight: normal;
 }
 
 .profile-dropdown li:hover {
   background-color: #f2f2f2;
 }
 
+.profile-dropdown li:first-child {
+  font-weight: bold;
+}
+
 .profile-dropdown li.manage-spots {
   font-weight: bold;
   padding-top: 5px;
 }
+
+/* Manage Spots Link */
+.manage-spots {
+  font-weight: bold;
+  padding-top: 5px;
+  color: black;
+}
+
 
 .manage-spots:hover {
   text-decoration: underline;
@@ -110,9 +122,9 @@
 .logout-button {
   background-color: #444;
   color: white;
-  padding: 8px 10px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 50px;
   cursor: pointer;
   width: 100%;
   text-align: center;
@@ -138,4 +150,12 @@
 .create-spot-link:hover {
   text-decoration: underline;
   background-color: #f2f2f2;
+}
+
+.profile-dropdown hr {
+  border: none; 
+  border-top: 1px solid black;  
+  margin: 8px 0; 
+  width: 100%; 
+  list-style: none;  
 }

@@ -5,7 +5,7 @@ import './Navigation.css';
 import logo from '../../../../images/logo.png';
 
 function Navigation({ isLoaded }) {
-  const sessionUser = useSelector(state => state.session.user);
+  const user = useSelector(state => state.session.user);
 
   return (
     <nav className="navbar">
@@ -16,8 +16,15 @@ function Navigation({ isLoaded }) {
         </NavLink>
         </li>
       </ul>
+
+      {user && (
+  <NavLink to="/spots/new" className="create-spot-link">
+    Create a New Spot
+  </NavLink>
+   )}
+
      
-      {isLoaded && <ProfileButton user={sessionUser} />}
+      {isLoaded && <ProfileButton user={user} />}
     </nav>
   );
 }

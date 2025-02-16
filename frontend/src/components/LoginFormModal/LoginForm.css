@@ -1,55 +1,55 @@
+/* Login Modal Container */
 .login-form-container {
     width: 350px;
-    margin: 50px auto;
     padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
 
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
+/* Form Inputs */
 .login-form input {
-  width: 100%;
-  margin-top: 5px; 
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px; 
+    width: 95%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 3px solid #000;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
-/* Normal login button */
-button {
-    background-color: #28a745;
-    color: white;
+/* Login Button (Specific to LoginFormModal) */
+.login-button {
+    width: 100%;
     padding: 10px;
-    border: none;
+    background-color: #ea2121;  
+    color: white;
+    border: 3px solid #000;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 14px;
+    box-shadow: 7px 4px 0px 0px rgb(0, 0, 0);
 }
 
-button:hover {
-    background-color: #218838;
+/* Active Login Button */
+.login-button:not(.disabled-login):hover {
+    background-color: #db3232;
 }
 
-/* Demo User Button */
-.demo-user {
-    background: #28a745;
+/* Disabled Login Button */
+.disabled-login {
+    background-color: lightgray !important;
+    cursor: not-allowed;
+}
+
+/* Demo User Link */
+.demo-user-text {
     margin-top: 10px;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
-.demo-user:hover {
-    background: #218838;
-}
-
-/* Error Message */
-.error-message {
-    color: red;
-    font-size: 12px;
-    margin-bottom: 10px;
-}
+/* .demo-user-text:hover {
+    text-decoration: underline;
+} */

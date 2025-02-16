@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import * as sessionActions from '../../store/session';
 import { useDispatch } from 'react-redux';
-import { useModal } from '../../context/Modal'
+import { useModal } from '../../context/Modal';
 import "./LoginForm.css"; 
-
-
 
 function LoginFormModal() {
   const dispatch = useDispatch();
@@ -12,7 +10,6 @@ function LoginFormModal() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const { closeModal } = useModal();
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,7 +23,7 @@ function LoginFormModal() {
         }
       });
   };
- 
+
   const loginAsDemoUser = () => {
     dispatch(sessionActions.login({ credential: "Demo-lition", password: "password" }))
       .then(closeModal);
@@ -36,36 +33,42 @@ function LoginFormModal() {
     <div className="login-form-container">
       <h1>Log In</h1>
       <form onSubmit={handleSubmit} className="login-form">
-          
-          <input
-            type="text"
-            value={credential}
-            onChange={(e) => setCredential(e.target.value)}
-            required
-            placeholder="Enter your email or username"
-          />
         
-        
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Enter your password"
-          />
-       
+        <input
+          type="text"
+          value={credential}
+          onChange={(e) => setCredential(e.target.value)}
+          required
+          placeholder="Username or Email"
+        />
+
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="Password"
+        />
+
         {errors.credential && <p className="error-message">{errors.credential}</p>}
-        <button type="submit" disabled={credential.length < 4 || password.length < 6}>Log In</button>
-        
-        <button className="demo-user" onClick={loginAsDemoUser}>
-          Log in as Demo User
-        </button>
-        
+
+        <button 
+  type="submit" 
+  className={`login-button ${credential.length < 4 || password.length < 6 ? "disabled-login" : ""}`} 
+  disabled={credential.length < 4 || password.length < 6}
+>
+  Log In
+</button>
+
       </form>
+
+      {/* Demo User Link */}
+      <p className="demo-user-text" onClick={loginAsDemoUser}>
+        Demo User
+      </p>
     </div>
   );
 }
 
-
-
 export default LoginFormModal;
+

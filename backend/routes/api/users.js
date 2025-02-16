@@ -74,7 +74,7 @@ router.post(
           message: 'User already exists',
           errors: {
             email: 'User with that email already exists',
-            username: 'User with that username already exists'
+            username: 'Username must be unique.'
           }
         });
       }

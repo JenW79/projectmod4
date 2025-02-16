@@ -5,6 +5,7 @@ import { fetchSpotDetails } from "../../store/spots";
 import PostReviewModal from "../PostReviewModal/PostReviewModal";
 import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal";
 import "../SpotDetailsPage/SpotDetailsPage.css";
+import { calculateRating } from "../../utils/calculatingRating";
 
 function SpotDetailsPage() {
   const { spotId } = useParams();
@@ -24,9 +25,10 @@ function SpotDetailsPage() {
 
   //  Clone array before reversing to prevent errors
   const reviewsArray = [...(spot.Reviews?.Reviews || [])].reverse();
+  const { avgRating, numReviews } = calculateRating(reviewsArray);
 
-  const totalStars = reviewsArray.reduce((acc, review) => acc + review.stars, 0);
-  const avgRating = reviewsArray.length ? (totalStars / reviewsArray.length).toFixed(1) : "New";
+  // const totalStars = reviewsArray.reduce((acc, review) => acc + review.stars, 0);
+  // const avgRating = reviewsArray.length ? (totalStars / reviewsArray.length).toFixed(1) : "New";
 
   const hasReviewed = reviewsArray.some(review => review.userId === user?.id);
   const isOwner = user?.id === spot.Owner?.id;
@@ -82,7 +84,7 @@ function SpotDetailsPage() {
         <div className="price-rating-container">
          <h3 className="price-box">${spot.price} <span>night</span></h3>
          <p className="spot-rating3">
-          <i className="fa-solid fa-star"></i> {avgRating} · {reviewsArray.length} reviews
+          <i className="fa-solid fa-star"></i> {avgRating} · {numReviews} reviews
            </p>
         </div>
           <button className="reserve-button" onClick={() => alert("Feature Coming Soon!")}>Reserve</button>
@@ -93,7 +95,7 @@ function SpotDetailsPage() {
       {/* Reviews Section */}
       <div className="reviews-section">
       <p className="spot-rating2">
-          <i className="fa-solid fa-star"></i> {avgRating} · {reviewsArray.length} reviews
+          <i className="fa-solid fa-star"></i> {avgRating} · {numReviews} reviews
            </p>
       {user && !isOwner && !hasReviewed && (
           <button className="post-review-btn" onClick={() => setShowReviewModal(true)}>Post Your Review</button>

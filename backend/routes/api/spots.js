@@ -93,6 +93,11 @@ router.get('/', async (req, res, next) => {
           where: { preview: true },
           required: false,
         },
+        {
+          model: Review,
+          as: "Reviews",
+          attributes: ["stars"], 
+        },
       ],
     });
 

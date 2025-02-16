@@ -5,6 +5,13 @@
   text-align: left;
 }
 
+.spot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px; 
+}
+
 .spots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -16,12 +23,23 @@
   width: 100%;
   max-width: 300px;
   background: white;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  padding: 10px; 
+  border-radius: 0px;
+  text-align: left; 
 }
   
+.spot-location1 {
+  font-size: 14px;
+  font-weight: bold;
+  flex-grow: 1;
+}
+
+.spot-price {
+  margin-top: -5px; 
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .spot-thumbnail {
   width: 100%;
   height: 200px;
@@ -31,19 +49,32 @@
   
 .spot-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  gap: 5px; 
+  margin-top: 5px;
 }
 
-  .update-btn {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    background-color: #007bff;
-    color: white;
-  }
+.update-btn, .delete-btn1 {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: 2px solid black;
+  background-color: #5a5959;
+  color: white;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px black; 
+}
+.update-btn:hover {
+  background-color: #5a5959;
+}
+
+.delete-btn1 {
+  background-color: #5a5959;
+  border: 2px solid black;
+}
+
+.delete-btn1:hover {
+  background-color: darkred;
+}
+
 
   .delete-modal {
     position: fixed;
@@ -135,7 +166,7 @@
   }
   
   .create-spot-btn {
-    background-color: #626060;
+    background-color: #5a5959;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -148,6 +179,15 @@
   }
   
   .create-spot-btn:hover {
-    background-color: #218838;
+    background-color: white;
+    color: black;
+
   }
-  
+
+.spot-rating4 {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  white-space: nowrap;
+  gap: 3px;
+}

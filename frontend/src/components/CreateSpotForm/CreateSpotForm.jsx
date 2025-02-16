@@ -7,7 +7,7 @@ import "./CreateSpotForm.css";
 function CreateSpotForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { spotId } = useParams(); // Check if editing
+  const { spotId } = useParams(); 
   const user = useSelector((state) => state.session.user);
   const existingSpot = useSelector((state) => state.spots.currentSpot);
 

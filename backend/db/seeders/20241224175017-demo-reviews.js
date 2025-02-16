@@ -22,7 +22,7 @@ module.exports = {
       options,
       [
         {
-          userId: 1,
+          userId: 2,
           spotId: 1,
           review: 'Amazing spot, had a great time!',
           stars: 5,
@@ -30,7 +30,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          userId: 2,
+          userId: 1,
           spotId: 2,
           review: 'Good place, but could be cleaner.',
           stars: 3,
@@ -38,7 +38,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          userId: 3,
+          userId: 2,
           spotId: 3,
           review: 'Not worth the price, disappointing.',
           stars: 2,

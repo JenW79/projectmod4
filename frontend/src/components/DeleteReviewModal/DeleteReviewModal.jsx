@@ -8,7 +8,7 @@ function DeleteReviewModal({ reviewId, spotId, onClose }) {
   const dispatch = useDispatch();
   const modalRef = useRef(null);
 
-  // Close modal when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {

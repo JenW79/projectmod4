@@ -15,13 +15,13 @@ function ProfileButton({ user }) {
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
 
-  // Toggle dropdown menu
+  
   const toggleMenu = (e) => {
     e.stopPropagation();
     setShowMenu((prev) => !prev);
   };
 
-  // Close menu when clicking outside
+ 
   useEffect(() => {
     if (!showMenu) return;
 
@@ -35,7 +35,7 @@ function ProfileButton({ user }) {
     return () => document.removeEventListener('click', closeMenu);
   }, [showMenu]);
 
-  // Close menu when modal opens or user logs out
+  
   const closeMenu = () => setShowMenu(false);
 
   const logout = async (e) => {

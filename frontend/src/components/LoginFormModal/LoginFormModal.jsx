@@ -62,7 +62,7 @@ function LoginFormModal() {
 
       </form>
 
-      {/* Demo User Link */}
+     
       <p className="demo-user-text" onClick={loginAsDemoUser}>
         Demo User
       </p>

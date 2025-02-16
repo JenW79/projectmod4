@@ -26,7 +26,7 @@ function SignupFormModal() {
       return;
     }
 
-    setErrors({}); // Clear errors before attempting signup
+    setErrors({}); 
     return dispatch(
       sessionActions.signup({
         email,

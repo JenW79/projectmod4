@@ -134,7 +134,6 @@ export const updateSpot = createAsyncThunk(
       
       return responseData;
     } catch (error) {
-      console.error(" Network or unexpected error:", error);
       return rejectWithValue(error.message);
     }
   }

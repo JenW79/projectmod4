@@ -32,13 +32,16 @@
     object-fit: cover;
   }
   .spot-rating {
-    font-size: 14px;
-    color: #ff9800;
+    font-size: 16px;
     font-weight: bold;
-    text-align: right;
-    padding-right: 10px;
-    margin-top: 5px;
-    min-width: 60px;
+    display: flex;
+    align-items: center;
+    gap: 5px; 
+  }
+  
+  .spot-rating i {
+    color: black; 
+    font-size: 14px; 
   }
   
   .spot-info-container {
@@ -61,7 +64,7 @@
   }
   
   .spot-price {
-    color: #007bff;
+    color: #010101;
     font-size: 16px;
     font-weight: bold;
   }

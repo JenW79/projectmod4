@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchSpotDetails } from "../../store/spots";
-import PostReviewModal from "../PostReviewModal/PostReviewModal"; 
-import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal"; 
-import "./SpotDetailsPage.css";
+import PostReviewModal from "../PostReviewModal/PostReviewModal";
+import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal";
+import "../SpotDetailsPage/SpotDetailsPage.css";
 
 function SpotDetailsPage() {
   const { spotId } = useParams();
   const dispatch = useDispatch();
   const spot = useSelector((state) => state.spots.currentSpot);
-  console.log("Current Spot from Redux:", spot);
   const user = useSelector((state) => state.session.user);
 
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -18,113 +17,111 @@ function SpotDetailsPage() {
   const [selectedReviewId, setSelectedReviewId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchSpotDetails(spotId))
-      .then((result) => console.log("Spot Details Response:", result.payload)); 
+    dispatch(fetchSpotDetails(spotId));
   }, [dispatch, spotId]);
 
   if (!spot) return <h2>Loading spot details...</h2>;
 
-  const hasReviewed = Array.isArray(spot.Reviews) && spot.Reviews.some(review => review.userId === user?.id);
-
-  const isOwner = user?.id === spot.Owner?.id;
-
-  const reviewsArray = spot.Reviews?.Reviews || []; 
+  //  Clone array before reversing to prevent errors
+  const reviewsArray = [...(spot.Reviews?.Reviews || [])].reverse();
 
   const totalStars = reviewsArray.reduce((acc, review) => acc + review.stars, 0);
   const avgRating = reviewsArray.length ? (totalStars / reviewsArray.length).toFixed(1) : "New";
-  
+
+  const hasReviewed = reviewsArray.some(review => review.userId === user?.id);
+  const isOwner = user?.id === spot.Owner?.id;
 
   return (
     <div className="spot-details-container">
+      {/* Spot Name & Location */}
       <h1 className="spot-title">{spot.name}</h1>
       <p className="spot-location">{spot.city}, {spot.state}, {spot.country}</p>
-      
-      <div className="spot-images-container">
-  {/* Main Image */}
-  <img 
-    src={spot.SpotImages?.[0]?.url || "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg"} 
-    alt="Main Spot" 
-    className="main-image" 
-  />
 
-  {/* Grid for 4 Additional Images */}
-  <div className="grid-images">
-    {[1, 2, 3, 4].map((index) => (
-      <img 
-        key={index} 
-        src={spot.SpotImages?.[index]?.url || "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg"} 
-        alt={`Spot ${index + 1}`} 
-        className="grid-image" 
-      />
-    ))}
-  </div>
+     {/* Spot Images Grid (1 Large + 4 Small) */}
+<div className="spot-images-container">
+         {/* Main Image (Preview Image) */}
+<img 
+  src={spot.previewImage || (spot.SpotImages?.length > 0 ? spot.SpotImages[0].url : "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg")} 
+  alt="Main Spot" 
+  className="main-image" 
+/>
+ {/* Grid for Additional Images */}
+<div className="grid-images">
+  {spot.SpotImages?.slice(1, 5).map((image, index) => (
+    <img 
+      key={image.id || `placeholder-${index}`} 
+      src={image.url || "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg"} 
+      alt={`Spot ${index + 1}`} 
+      className="grid-image" 
+    />
+  ))}
+
+  {/* Fill empty slots with placeholders if less than 4 images */}
+  {Array.from({ length: Math.max(0, 4 - (spot.SpotImages?.length - 1)) }).map((_, index) => (
+    <img 
+      key={`placeholder-${index}`} 
+      src="https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg"
+      alt="Placeholder" 
+      className="grid-image placeholder-image"
+    />
+  ))}
+</div>
 </div>
 
 
-    
-      <p className="spot-host">
-        {spot.Owner
-          ? `Hosted by ${spot.Owner.firstName} ${spot.Owner.lastName}`
-          : "Loading host info..."}
-      </p>
 
-      <div className="spot-info-container2">
+      {/* Host Info */}
+      <p className="spot-host">Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</p>
+
+      {/* Spot Details (Price, Rating, Reserve Button) */}
+      <div className="spot-info-container">
         <div className="spot-description">
           <p>{spot.description}</p>
         </div>
         <div className="spot-reserve-section">
-          <div className="price-rating-container">
-            <h3 className="price-box">${spot.price} <span>night</span></h3>
-            <p className="spot-rating1">⭐ {avgRating} · {spot.Reviews?.length || 0} reviews</p>
-
-
-          </div>
-          <button className="reserve-button">Reserve</button>
+        <div className="price-rating-container">
+         <h3 className="price-box">${spot.price} <span>night</span></h3>
+         <p className="spot-rating3">
+          <i className="fa-solid fa-star"></i> {avgRating} · {reviewsArray.length} reviews
+           </p>
         </div>
-      </div>
-
-      <div className="spot-rating-container">
-      <p className="spot-rating1">⭐ {avgRating} · {spot.Reviews?.length || 0} reviews</p>
-
-      </div>
-
-      <div className="reviews-section">
-        <h3>Reviews</h3>
-
+          <button className="reserve-button" onClick={() => alert("Feature Coming Soon!")}>Reserve</button>
+        </div>
         
-        {user && !isOwner && !hasReviewed && (
-          <button className="post-review-btn" onClick={() => setShowReviewModal(true)}>
-            Post Your Review
-          </button>
-        )}
-
-{reviewsArray.length > 0 ? (
-  [...reviewsArray].reverse().map((review) => (
-    <div key={review.id} className="review">
-      <strong>{review.User?.firstName || "Anonymous"}</strong>
-      - {new Date(review.createdAt).toDateString()}
-      <p>{review.review}</p>
-
-      {user?.id === review.userId && (
-        <button
-          className="delete-review-btn"
-          onClick={() => {
-            setSelectedReviewId(review.id);
-            setShowDeleteModal(true);
-          }}
-        >
-          Delete
-        </button>
-      )}
-    </div>
-  ))
-) : (
-  <p>No reviews yet.</p>
-)}
       </div>
-      
+
+      {/* Reviews Section */}
+      <div className="reviews-section">
+      <p className="spot-rating2">
+          <i className="fa-solid fa-star"></i> {avgRating} · {reviewsArray.length} reviews
+           </p>
+      {user && !isOwner && !hasReviewed && (
+          <button className="post-review-btn" onClick={() => setShowReviewModal(true)}>Post Your Review</button>
+        )}
+        
+        {reviewsArray.length > 0 ? (
+          reviewsArray.map(review => (
+            <div key={review.id} className="review">
+              <strong>{review.User?.username || "Anonymous"}</strong>
+              <p>{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+              <p>{review.review}</p>
+              {user?.id === review.userId && (
+                <button className="delete-review-btn" onClick={() => {
+                  setSelectedReviewId(review.id);
+                  setShowDeleteModal(true);
+                }}>Delete</button>
+              )}
+            </div>
+          ))
+        ) : (
+          user && !isOwner && !hasReviewed && (
+            <p>Be the first to post a review!</p>
+          )
+        )}
+      </div>
+
       {showReviewModal && <PostReviewModal spotId={spotId} onClose={() => setShowReviewModal(false)} />}
-      {showDeleteModal && (<DeleteReviewModal reviewId={selectedReviewId} spotId={spotId} onClose={() => setShowDeleteModal(false)} />)}
+      {showDeleteModal && <DeleteReviewModal reviewId={selectedReviewId} spotId={spotId} onClose={() => setShowDeleteModal(false)} />}
     </div>
   );
 }

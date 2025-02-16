@@ -10,7 +10,6 @@ const { Op } = require('sequelize');
 const router = express.Router();
 
 
-
 // Get all spots and with query filters
 router.get('/', async (req, res, next) => {
   let {
@@ -169,7 +168,8 @@ router.get("/:spotId", async (req, res, next) => {
   const { spotId } = req.params;
 
   try {
-    const spot = await Spot.findByPk(spotId, {
+    const spot = await Spot.findOne({
+      where: { id: spotId },
       attributes: [
         'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng',
         'name', 'description', 'price', 'createdAt', 'updatedAt',
@@ -177,12 +177,26 @@ router.get("/:spotId", async (req, res, next) => {
         [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgStarRating'],
       ],
       include: [
-        { model: Image, as: 'SpotImages', attributes: ['id', 'url', 'preview'] },
-        { model: User, as: 'Owner', attributes: ['id', 'firstName', 'lastName'] },
-        { model: Review, as: 'Reviews', attributes: [] },
+        {
+          model: Image,
+          as: 'SpotImages',
+          attributes: ['id', 'url', 'preview'],
+          required: false, 
+        },
+        {
+          model: User,
+          as: 'Owner',
+          attributes: ['id', 'firstName', 'lastName'],
+        },
+        {
+          model: Review,
+          as: 'Reviews',
+          attributes: [],
+        },
       ],
       group: ['Spot.id', 'SpotImages.id', 'Owner.id'],
     });
+    
 
     if (!spot) {
       const err = new Error("Spot couldn't be found");
@@ -192,16 +206,13 @@ router.get("/:spotId", async (req, res, next) => {
 
     // Ensure `previewImage` is set correctly
     let previewImage = null;
-    if (spot.SpotImages.length > 0) {
+    if (spot.SpotImages && spot.SpotImages.length > 0) {
       const preview = spot.SpotImages.find(img => img.preview);
       previewImage = preview ? preview.url : spot.SpotImages[0].url;
     }
-
     // Ensure SpotImages always contains at least one image
-    if (spot.SpotImages.length === 0) {
-      spot.SpotImages.push({ id: -1, url: "https://your-default-placeholder.com/default.jpg", preview: true });
-    }
-
+    const spotImages = spot.SpotImages.length > 0 ? spot.SpotImages : [{ id: -1, url: "https://res.cloudinary.com/dhxnqjcvf/image/upload/v1739144200/unnamed_mxhpr0.jpg", preview: true }];
+    
     const response = {
       id: spot.id,
       ownerId: spot.ownerId,
@@ -461,7 +472,7 @@ router.get('/:spotId/reviews', async (req, res, next) => {
       include: [
         {
           model: User,
-          attributes: ['id', 'firstName', 'lastName'],
+          attributes: ['id', 'firstName', 'lastName', 'username'],
         },
         {
           model: Image,

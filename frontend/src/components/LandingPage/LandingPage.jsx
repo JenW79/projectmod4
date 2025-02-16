@@ -9,6 +9,9 @@ function LandingPage() {
   const navigate = useNavigate();
   const spots = useSelector((state) => state.spots.allSpots);
 
+  
+
+
   useEffect(() => {
     dispatch(fetchAllSpots());
   }, [dispatch]);
@@ -26,7 +29,6 @@ function LandingPage() {
       onClick={() => navigate(`/spots/${spot.id}`)} 
       title={spot.name} 
     >
-
       <div className="spot-image-container">
         <img 
           src={spot.previewImage} 
@@ -45,14 +47,26 @@ function LandingPage() {
           </div>
         </div>
         
+
         <div className="spot-rating">
-          {spot.avgRating ? `⭐ ${spot.avgRating.toFixed(1)}` : "New"}
-        </div>
+  {spot.numReviews > 0 ? (
+    <>
+      <i className="fa-solid fa-star"></i> {spot.avgStarRating}
+    </>
+  ) : (
+    <>
+      <i className="fa-solid fa-star"></i> New
+    </>
+  )}
+</div>
+
+
       </div>
     </div>
   ))}
 </div>
   );
 }
+
 
 export default LandingPage;

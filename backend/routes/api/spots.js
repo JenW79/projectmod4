@@ -145,10 +145,10 @@ router.get('/current', requireAuth, async (req, res, next) => {
       [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating'],
     ],
     include: [
-      { model: Review, as: 'Reviews', attributes: [] },
+      { model: Review, as: 'Reviews', attributes: ['id', 'stars', 'review', 'userId'] },
       { model: Image, as: 'SpotImages', attributes: ['url', 'preview'], required: false },
     ],
-    group: ['Spot.id', 'SpotImages.id'],
+    group: ['Spot.id', 'SpotImages.id', 'Reviews.id'],
   });
 
   // Ensure every spot has a `previewImage`

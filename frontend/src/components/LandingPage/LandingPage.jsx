@@ -44,7 +44,7 @@ function LandingPage() {
                   {spot.city}, {spot.state}
                 </div>
                 <div className="spot-price">
-                  ${spot.price} <span> night</span>
+                  ${spot.price} <span className="night1"> night</span>
                 </div>
               </div>
 

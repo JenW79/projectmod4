@@ -16,6 +16,8 @@ function ManageSpotsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [spotToDelete, setSpotToDelete] = useState(null);
 
+
+
   useEffect(() => {
     if (user) dispatch(fetchCurrentUserSpots());
     else navigate("/login"); // Redirect unauthorized users
@@ -25,6 +27,7 @@ function ManageSpotsPage() {
   if (status === "failed") return <h2>Error: {error}</h2>;
   
   if (!spots || spots.length === 0) {
+
     return (
       <div className="manage-spots-container">
         <h1>Manage Your Spots</h1>
@@ -56,6 +59,7 @@ function ManageSpotsPage() {
       </button>
       <div className="spots-grid">
         {spots.map((spot) => {
+          
           const { avgRating, numReviews } = calculateRating(spot.Reviews || []); 
 
           return (
@@ -76,17 +80,19 @@ function ManageSpotsPage() {
               </div>
               <div className="spot-buttons">
 
-                {showDeleteModal && (
-                  <div className="delete-modal">
-                    <div className="modal-content">
-                      <h3>Confirm Delete</h3>
-                      <p>Are you sure you want to remove this spot from the listings?</p>
-                      
-                      <button className="confirm-delete" onClick={handleDelete}>Yes (Delete Spot)</button>
-                      <button className="cancel-delete" onClick={() => setShowDeleteModal(false)}>No (Keep Spot)</button>
-                    </div>
-                  </div>
-                )}
+              {showDeleteModal && (
+  <div className="delete-modal">
+    <div className="modal-content">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to remove this spot from the listings?</p>
+
+      <div className="modal-buttons">
+        <button className="confirm-delete" onClick={handleDelete}>Yes (Delete Spot)</button>
+        <button className="cancel-delete" onClick={() => setShowDeleteModal(false)}>No (Keep Spot)</button>
+      </div>
+    </div>
+  </div>
+)}
                 <button className="update-btn" onClick={() => navigate(`/spots/${spot.id}/edit`)}>
                   Update
                 </button>

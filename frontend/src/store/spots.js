@@ -79,12 +79,13 @@ export const fetchCurrentUserSpots = createAsyncThunk(
       if (!response.ok) {
         throw new Error("Failed to fetch spots");
       }
-      return await response.json();
+      return await response.json(); 
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 export const createSpot = createAsyncThunk(
   "spots/createSpot",

@@ -69,19 +69,16 @@ function SpotDetailsPage() {
 </div>
 </div>
 
-
-
       
       <h2 className="spot-host">Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</h2>
-
       
-      <div className="spot-info-container">
+      <div className="spot-info-container1">
         <div className="spot-description">
-          <p>{spot.description}</p>
+          <p><strong>{spot.description}</strong></p>
         </div>
         <div className="spot-reserve-section">
         <div className="price-rating-container">
-         <h3 className="price-box">${spot.price} <span>night</span></h3>
+         <h3 className="price-box">${spot.price} <span className="night">night</span></h3>
          <p className="spot-rating3">
           <i className="fa-solid fa-star"></i> {avgRating} · {numReviews} reviews
            </p>
@@ -103,9 +100,9 @@ function SpotDetailsPage() {
         {reviewsArray.length > 0 ? (
           reviewsArray.map(review => (
             <div key={review.id} className="review">
-              <strong>{review.User?.username || "Anonymous"}</strong>
-              <p>{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
-              <p>{review.review}</p>
+              <p className="user">{review.User?.username || "Anonymous"}</p>
+              <p className="date">{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+              <p><strong>{review.review}</strong></p>
               {user?.id === review.userId && (
                 <button className="delete-review-btn" onClick={() => {
                   setSelectedReviewId(review.id);

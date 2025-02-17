@@ -81,6 +81,7 @@ function ManageSpotsPage() {
                     <div className="modal-content">
                       <h3>Confirm Delete</h3>
                       <p>Are you sure you want to remove this spot from the listings?</p>
+                      
                       <button className="confirm-delete" onClick={handleDelete}>Yes (Delete Spot)</button>
                       <button className="cancel-delete" onClick={() => setShowDeleteModal(false)}>No (Keep Spot)</button>
                     </div>

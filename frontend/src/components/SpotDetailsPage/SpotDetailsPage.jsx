@@ -72,7 +72,7 @@ function SpotDetailsPage() {
 
 
       
-      <p className="spot-host">Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</p>
+      <h2 className="spot-host">Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</h2>
 
       
       <div className="spot-info-container">

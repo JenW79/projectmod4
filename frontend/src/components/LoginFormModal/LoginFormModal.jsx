@@ -64,7 +64,7 @@ function LoginFormModal() {
 
      
       <p className="demo-user-text" onClick={loginAsDemoUser}>
-        Demo User
+       Log in as Demo User
       </p>
     </div>
   );

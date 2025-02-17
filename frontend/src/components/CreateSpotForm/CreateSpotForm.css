@@ -22,17 +22,21 @@
   }
   
   .create-spot-container button {
-    width: 100%;
+    display: block;
+    margin: auto;
+    width: 25%;
     padding: 10px;
-    background-color: #28a745;
+    background-color: #ea2121;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    box-shadow: 3px 3px 0px black;
+    border: 2px solid black;
   }
   
   .create-spot-container button:hover {
-    background-color: #218838;
+    background-color: #080808;
   }
   
   .inline-inputs {
